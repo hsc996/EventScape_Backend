@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "db:drop": "node src/utils/dbDrop.js",
+    "seed": "node src/utils/dbSeed.js",
+    "db:drop-and-seed": "npm run db:drop && npm run seed"
   },
   "keywords": [],
   "author": "",

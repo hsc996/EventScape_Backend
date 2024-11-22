@@ -12,6 +12,9 @@ app.get("/", (request, response) => {
     });
 });
 
+// const UserController = require('./controllers/UserController');
+// app.use("/user", UserController);
+
 module.exports = {
     app
 }
