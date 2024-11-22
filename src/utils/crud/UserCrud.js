@@ -23,8 +23,21 @@ async function findManyUsers(query){
     return result;
 }
 
+async function updateOneUser(query, updateData){
+    let result = await UserModel.findOneAndUpdate(query, updateData, { new: true });
+
+    return result
+}
+
+async function deleteOneUser(){
+
+}
+
+
+
 module.exports = {
     createUser,
     findOneUser,
-    findManyUsers
+    findManyUsers,
+    updateOneUser
 }
