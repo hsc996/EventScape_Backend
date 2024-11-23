@@ -23,7 +23,7 @@ router.get("/:userId", async (request, response) => {
         });
     } catch (error) {
         console.error("Error finding user: ", error);
-        response.status(500).json({error: "Server error"});
+        response.status(500).json({error: "Internal Server Error."});
     }
 });
 
