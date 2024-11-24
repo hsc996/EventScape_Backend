@@ -31,7 +31,7 @@ router.post("/signup", async (request, response) => {
         if (!passwordRegex.test(password)){
             return response.status(400).json({
                 message: "Password must be at least 8 characters and include at least one letter, one number, and one special character."
-            })
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, saltRounds);

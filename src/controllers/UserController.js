@@ -1,6 +1,7 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 
-const { findOneUser, findManyUsers, updateOneUser } = require('../utils/crud/UserCrud.js');
+const { findOneUser, updateOneUser } = require('../utils/crud/UserCrud.js');
 const { UserModel } = require("../models/UserModel.js");
 
 const router = express.Router();
@@ -43,6 +44,16 @@ router.patch('/:userId', async (request, response) => {
                     message:"Username already taken. Please choose a different one."
                 });
             }
+        }
+
+        if (updateData.password){
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+            if (!passwordRegex.test(updateData.password)){
+                return response.status(400).json({
+                    message: "Password must be at least 8 characters and include at least one letter, one number, and one special character."
+                });
+            }
+            updateData.password = await bcrypt.hash(updateData.password, 10);
         }
 
         let result = await updateOneUser(
