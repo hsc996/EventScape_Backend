@@ -1,6 +1,7 @@
 const express = require("express");
 
 const { findOneUser, findManyUsers, updateOneUser } = require('../utils/crud/UserCrud.js');
+const { UserModel } = require("../models/UserModel.js");
 
 const router = express.Router();
 
@@ -35,6 +36,15 @@ router.patch('/:userId', async (request, response) => {
         
         const updateData = request.body;
 
+        if (updateData.username){
+            const existingUser = await UserModel.findOne({ username: updateData.username});
+            if (existingUser && existingUser._id.toString() !== request.params.userId){
+                return response.status(400).json({
+                    message:"Username already taken. Please choose a different one."
+                });
+            }
+        }
+
         let result = await updateOneUser(
             {_id: request.params.userId},
             updateData
@@ -48,6 +58,7 @@ router.patch('/:userId', async (request, response) => {
         }
 
         response.json({
+            message: "Profile data updated successfully.",
             data: result
         })
     } catch (error) {
@@ -58,9 +69,10 @@ router.patch('/:userId', async (request, response) => {
 
 
 
-
-
-
 // Delete Profile
+
+
+
+
 
 module.exports = router;

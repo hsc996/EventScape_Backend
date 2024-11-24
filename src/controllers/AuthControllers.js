@@ -92,9 +92,13 @@ router.post("/signin", async (request, response) => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
+        console.log("Provided password:", password);
+        console.log("Stored hashed password:", user.password);
+
         if (!isPasswordValid){
+            console.log("Invalid password attempt for email:", email); // Log the invalid password attempt
             return response.status(404).json({
-                message: "Invalid password."
+                message: "Invalid password"
             });
         }
 
