@@ -18,6 +18,10 @@ app.use("/user", UserController);
 const AuthController = require("./controllers/AuthControllers.js");
 app.use("/account", AuthController);
 
+// const EventController = require("./controllers/EventController.js");
+// app.use("/event", EventController);
+
+
 module.exports = {
     app
 }

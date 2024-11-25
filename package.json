@@ -7,8 +7,7 @@
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "db:drop": "node src/utils/dbDrop.js",
-    "seed": "node src/utils/dbSeed.js",
-    "db:drop-and-seed": "npm run db:drop && npm run seed"
+    "seed": "node src/utils/dbSeed.js"
   },
   "keywords": [],
   "author": "",
