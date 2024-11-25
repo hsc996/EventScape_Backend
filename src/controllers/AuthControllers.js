@@ -42,7 +42,7 @@ router.post("/signup", async (request, response) => {
             password: hashedPassword
         });
 
-        console.log(`User successfully created: ${newUser.username} (${newUser.email})`);
+        console.log(`User created successfully: ${newUser.username} (${newUser.email})`);
     
         let newJwt = generateJWT(newUser._id, newUser.username);
     

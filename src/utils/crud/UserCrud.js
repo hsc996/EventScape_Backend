@@ -2,27 +2,35 @@ const { UserModel } = require("../../models/UserModel.js");
 
 async function createUser(username, email, password, isAdmin){
     try {
+
         let result = await UserModel.create({
             username: username,
             email: email,
             password: password,
             isAdmin: isAdmin
         });
+
         return result;
+
     } catch (error) {
+
         console.error("Error creating profile: ", error);
         throw new Error("Error creating profile, please try again.");
+
     }
 }
 
 async function findOneUser(query){
    try {
-    let result = await UserModel.findOne(query);
+        let result = await UserModel.findOne(query);
 
-    return result;
+        return result;
+        
    } catch (error) {
-    console.error("Error finding profile: ", error);
-    throw new Error("Error finding profile, please try again.")
+
+        console.error("Error finding profile: ", error);
+        throw new Error("Error finding profile, please try again.");
+
    }
 }
 
