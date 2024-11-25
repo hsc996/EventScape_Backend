@@ -16,8 +16,13 @@ function generateJWT(userId, username, roles = null){
     );
 }
 
-function decodeJWT(tokenToDecode){
-    return jwtverify(tokenToDecode, jwtSecretKey);
+function decodeJWT(tokenToDecode) {
+    try {
+        return jwt.verify(tokenToDecode, jwtSecretKey);
+    } catch (error) {
+        console.error("JWT verification failed:", error);
+        throw new Error("Invalid or expired token.")
+    }
 }
 
 module.exports = {

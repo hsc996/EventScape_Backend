@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
 const { UserModel } = require("../models/UserModel.js");
+const { validateUserAuth } = require('../middleware/validateUserAuth.js');
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ router.get("/search/:userId", async (request, response) => {
 
 
 // Update Profile Data
-router.patch('/:userId', async (request, response) => {
+router.patch('/:userId', validateUserAuth, async (request, response) => {
     try {
         
         const updateData = request.body;
@@ -59,8 +60,6 @@ router.patch('/:userId', async (request, response) => {
             updateData
         );
 
-        console.log("User found: " + JSON.stringify(result));
-
         // If no result, return error message
         if (!result){
             return response.status(404).json({error: "User not found."});
@@ -80,7 +79,7 @@ router.patch('/:userId', async (request, response) => {
 
 // Delete Profile
 
-router.delete("/delete/:userId", async (request, response) => {
+router.delete("/delete/:userId", validateUserAuth,  async (request, response) => {
     try {
 
         let userToBeDeleted = request.params.userId;
@@ -103,9 +102,6 @@ router.delete("/delete/:userId", async (request, response) => {
         response.status(500).json({error: "Internal Server Error."})
     }
 });
-
-
-
 
 
 module.exports = router;

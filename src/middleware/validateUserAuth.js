@@ -1,7 +1,7 @@
 const { decodeJWT } = require('../functions/jwtFunctions');
 
 async function validateUserAuth(request, response, next){
-    let providedToken = request.headers.jwt;
+    const providedToken = request.headers.authorization && request.headers.authorization.split(' ')[1];
     console.log(providedToken);
 
     if (!providedToken){
@@ -10,14 +10,15 @@ async function validateUserAuth(request, response, next){
         });
     }
 
-    let decodedData = decodeJWT(providedToken);
-    console.log(decodedData);
-    if (decodedData.userId){
+    const decodedData = decodeJWT(providedToken);
+    console.log("Decoded data: ", decodedData);
+
+    if (decodedData && decodedData.userId){
         request.authUserData = decodedData;
-        next();
+        return next();
     } else {
         return response.status(403).json({
-            message: "Please sign in to view this content."
+            message: "Please sign in to view this content.",
         });
     }
 }
