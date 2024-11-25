@@ -2,12 +2,13 @@ const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const { EventModel } = require("../controllers/EventController.js");
-const { createEvent, findOneEvent } = require("../utils/crud/EventCrud.js");
+const { createEvent, findOneEvent, updateOneEvent } = require("../utils/crud/EventCrud.js");
 
 const router = express.Router();
 
 
 // Read Event
+
 router.get("search/:eventId", async (request, response) => {
     try {
 
@@ -32,6 +33,7 @@ router.get("search/:eventId", async (request, response) => {
 
 
 // Create Event
+
 router.post("/create", validateUserAuth, async (request, response) => {
     try {
         
@@ -92,6 +94,34 @@ router.post("/create", validateUserAuth, async (request, response) => {
 
 // Update Event
 
+router.patch("/update/:eventId", validateUserAuth, async (request, response) => {
+    try {
+        const { eventId } = request.params;
+        const updateData = request.body;
+
+        if (!eventId){
+            return response.status(404).json({error: "Event not found."});
+        }
+
+        const updatedEvent = await updateOneEvent(
+            {_id: eventId},
+            updateData
+        );
+
+        if (!updatedEvent){
+            return response.status(404).json({error: "Event not found or could not be updated."});
+        }
+
+        response.json({
+            message: "Event data updated successfully.",
+            data: updatedEvent
+        })
+
+    } catch (error) {
+        console.error("Error updating event data: ", error);
+        response.status(500).json({error: "Internal Server Error."})
+    }
+});
 
 
 

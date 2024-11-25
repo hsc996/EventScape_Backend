@@ -33,7 +33,19 @@ async function findOneEvent(query){
     }
 }
 
+async function updateOneEvent(query, updateData){
+    try {
+        let result = await EventModel.findOneAndUpdate(query, updateData, { new: true });
+
+        return result;
+    } catch (error) {
+        console.error("Error updating event information: ", error);
+        throw new Error("Error updating event, please try again.")
+    }
+}
+
 module.exports = {
     createEvent,
-    findOneEvent
+    findOneEvent,
+    updateOneEvent
 }
