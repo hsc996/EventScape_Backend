@@ -2,7 +2,7 @@ const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const { EventModel } = require("../controllers/EventController.js");
-const { createEvent, findOneEvent, updateOneEvent } = require("../utils/crud/EventCrud.js");
+const { createEvent, findOneEvent, updateOneEvent, deleteOneEvent } = require("../utils/crud/EventCrud.js");
 
 const router = express.Router();
 
@@ -125,8 +125,29 @@ router.patch("/update/:eventId", validateUserAuth, async (request, response) => 
 
 
 
-
 // Delete
+router.delete("/delete/:eventId", validateUserAuth, async (request, response) => {
+    try {
+        let eventToBeDeleted = request.params.eventId;
+
+        let deletedEvent = await deleteOneEvent({_id: eventToBeDeleted});
+
+        if (!deletedEvent){
+            return response.status(404).json({error: "Event not found."});
+        }
+
+        console.log("Event with ID " + JSON.stringify(deletedEvent) + "deleted successfully.");
+
+        response.json({
+            message: "Event data deleted successfully.",
+            data: deletedEvent
+        })
+
+    } catch (error) {
+        console.error("Error deleting event data: ", error);
+        response.status(500).json({error: "Internal Server Error."});
+    }
+});
 
 
 module.exports = router;

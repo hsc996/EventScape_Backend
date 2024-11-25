@@ -44,8 +44,21 @@ async function updateOneEvent(query, updateData){
     }
 }
 
+
+async function deleteOneEvent(query){
+    try {
+        let result = await EventModel.deleteOne(query);
+
+        return result;
+    } catch (error) {
+        console.error("Error deleting event page: ", error);
+        throw new Error("Error deleting event page, please try again.");
+    }
+}
+
 module.exports = {
     createEvent,
     findOneEvent,
-    updateOneEvent
+    updateOneEvent,
+    deleteOneEvent
 }

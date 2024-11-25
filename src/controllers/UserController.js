@@ -99,7 +99,7 @@ router.delete("/delete/:userId", validateUserAuth,  async (request, response) =>
 
     } catch (error) {
         console.error("Error deleting user data: ", error);
-        response.status(500).json({error: "Internal Server Error."})
+        response.status(500).json({error: "Internal Server Error."});
     }
 });
 
