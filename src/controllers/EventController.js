@@ -2,14 +2,38 @@ const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const { EventModel } = require("../controllers/EventController.js");
-const { createEvent, findOneEvent, updateOneEvent, deleteOneEvent } = require("../utils/crud/EventCrud.js");
+const { createEvent, findOneEvent, updateOneEvent, deleteOneEvent, findActiveEventsForUser } = require("../utils/crud/EventCrud.js");
 
 const router = express.Router();
 
 
-// Read Event
+// Find all active events user is attending -- NOT TESTED YET
 
-router.get("search/:eventId", async (request, response) => {
+router.get("/attending/:userId", async (request, response) => {
+    try {
+        const { userId } = request.params;
+
+        if (!userId){
+            return response.status(404).json({error: "User not found."});
+        }
+    
+        const events = await findActiveEventsForUser(userId);
+    
+        if (!events.length){
+            return response.status(404).json({error: "No active events found for this user."});
+        }
+    
+        response.status(200).json({ message: "Active events retrieved successfully", data: events });
+    } catch (error) {
+        console.error("Error retrieving active events: ", error.message);
+        response.status(500).json({ error: "Internal server error. Please try again later." });
+    }
+})
+
+
+// View Event
+
+router.get("/search/:eventId", async (request, response) => {
     try {
 
         let result = await findOneEvent({_id: request.params.eventId});

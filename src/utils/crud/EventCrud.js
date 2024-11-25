@@ -33,6 +33,22 @@ async function findOneEvent(query){
     }
 }
 
+async function findActiveEventsForUser(userId){
+    try {
+
+        let events = await EventModel.find({
+            attendees: userId,
+            isActive: true
+        });
+
+        return events;
+
+    } catch (error) {
+        console.error("Error finding active events for user: ", error);
+        throw new Error("Error finding active events, please try again.");
+    }
+}
+
 async function updateOneEvent(query, updateData){
     try {
         let result = await EventModel.findOneAndUpdate(query, updateData, { new: true });
@@ -60,5 +76,6 @@ module.exports = {
     createEvent,
     findOneEvent,
     updateOneEvent,
-    deleteOneEvent
+    deleteOneEvent,
+    findActiveEventsForUser
 }

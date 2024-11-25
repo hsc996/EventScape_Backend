@@ -25,12 +25,10 @@ async function findOneUser(query){
         let result = await UserModel.findOne(query);
 
         return result;
-        
    } catch (error) {
-
+    
         console.error("Error finding profile: ", error);
-        throw new Error("Error finding profile, please try again.");
-
+        throw new Error("Error finding profile, please try again.")
    }
 }
 

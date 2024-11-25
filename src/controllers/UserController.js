@@ -8,7 +8,8 @@ const { validateUserAuth } = require('../middleware/validateUserAuth.js');
 const router = express.Router();
 
 
-// Get user by username
+// View Profile
+
 router.get("/search/:userId", async (request, response) => {
     try {
         
@@ -31,6 +32,7 @@ router.get("/search/:userId", async (request, response) => {
 
 
 // Update Profile Data
+
 router.patch('/:userId', validateUserAuth, async (request, response) => {
     try {
         
