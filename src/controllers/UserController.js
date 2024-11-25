@@ -1,24 +1,23 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 
-const { findOneUser, updateOneUser } = require('../utils/crud/UserCrud.js');
+const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
 const { UserModel } = require("../models/UserModel.js");
 
 const router = express.Router();
 
 
 // Get user by username
-router.get("/:userId", async (request, response) => {
+router.get("/search/:userId", async (request, response) => {
     try {
-        console.log("Searching for a user with ID of: " + request.params.userId);
         
         let result = await findOneUser({_id: request.params.userId});
-        
-        console.log("User found: " + JSON.stringify(result));
 
         if (!result){
             return response.status(404).json({error: "User not found."});
         }
+
+        console.log("User found: " + JSON.stringify(result));
 
         response.json({
             data: result
@@ -33,7 +32,6 @@ router.get("/:userId", async (request, response) => {
 // Update Profile Data
 router.patch('/:userId', async (request, response) => {
     try {
-        console.log("Updating profile of user with ID: " + request.params.userId);
         
         const updateData = request.body;
 
@@ -73,14 +71,38 @@ router.patch('/:userId', async (request, response) => {
             data: result
         })
     } catch (error) {
-        console.error("Error updating user: ", error);
-        response.status(500).json({error: "Server error"});
+        console.error("Error updating user data: ", error);
+        response.status(500).json({error: "Internal Server Error."});
     }
 });
 
 
 
 // Delete Profile
+
+router.delete("/delete/:userId", async (request, response) => {
+    try {
+
+        let userToBeDeleted = request.params.userId;
+
+        let result = await deleteOneUser({_id: userToBeDeleted});
+
+        if (!result){
+            return response.status(404).json({error: "User not found."});
+        }
+
+        console.log("Profile with ID " + JSON.stringify(result) + "deleted successfully.");
+
+        response.json({
+            message: "Profile data deleted successfully.",
+            data: result
+        })
+
+    } catch (error) {
+        console.error("Error deleting user data: ", error);
+        response.status(500).json({error: "Internal Server Error."})
+    }
+});
 
 
 
