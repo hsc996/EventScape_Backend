@@ -91,13 +91,42 @@ router.patch("/update", validateUserAuth, async (request, response) => {
 
 
 // Delete RSVP
-router.delete("/:rsvpId", validateUserAuth, async (request, response) => {
+router.delete("/delete/:rsvpId", validateUserAuth, async (request, response) => {
     const { rsvpId } = request.params;
+    const { userId } = request.authUserData;
+
 
     try {
-        
+        if (!rsvpId){
+            return response.status(400).json({
+                message: "RSVP ID is required."
+            });
+        }
+
+        const existingRsvp = await findOneRSVP({ _id: rsvpId, userId});
+        if (!existingRsvp){
+            return response.status(404).json({
+                message: "RSVP not found or you are not authorised to delete this RSVP."
+            })
+        }
+
+        const result = await deleteRSVP({ _id: rsvpId, userId });
+
+        if (result.deletedCount === 0){
+            return response.status(400).json({
+                message: "Error deleting RSVP, please try again."
+            })
+        }
+
+        response.status(200).json({
+            message: "RSVP deleted successfully."
+        });
+
     } catch (error) {
-        
+        console.error("Error deleting RSVP: ", error);
+        response.status(500).json({
+            message: "Error deleting RSVP, please try again."
+        });
     }
 });
 
@@ -119,6 +148,7 @@ router.get("/rsvplist/:eventId", async (request, response) => {
         response.status(500).json({ error: error.message });
     }
 });
+
 
 
 module.exports = router;
