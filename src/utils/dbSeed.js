@@ -1,6 +1,7 @@
 const { dbConnect, dbDisconnect } = require('../functions/dbFunctions.js');
 const { UserModel } = require('../models/UserModel.js');
 const { EventModel } = require('../models/EventModel.js');
+const { RSVPModel } = require('../models/RSVPModel.js');
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -11,7 +12,8 @@ async function dropAndSeed(){
 
         await UserModel.deleteMany({});
         await EventModel.deleteMany({});
-        console.log("Old users and events deleted.")
+        await RSVPModel.deleteMany({});
+        console.log("Old collections deleted.")
 
         const users = [
             {
@@ -74,9 +76,40 @@ async function dropAndSeed(){
             }
         ];
 
-        await EventModel.insertMany(events);
+        const insertedEvents = await EventModel.insertMany(events);
+        console.log("Events seeded successfully.");
 
-        console.log("Database seeded successfully.");
+        // Seed RSVPs
+        const rsvpData = [
+            {
+                eventId: insertedEvents[0]._id,
+                userId: insertedUsers[0]._id,
+                status: "yes"
+            },
+            {
+                eventId: insertedEvents[0]._id,
+                userId: insertedUsers[1]._id,
+                status: "maybe"
+            },
+            {
+                eventId: insertedEvents[1]._id,
+                userId: insertedUsers[2]._id,
+                status: "no"
+            },
+            {
+                eventId: insertedEvents[2]._id,
+                userId: insertedUsers[1]._id,
+                status: "yes"
+            },
+            {
+                eventId: insertedEvents[2]._id,
+                userId: insertedUsers[0]._id,
+                status: "maybe"
+            }
+        ];
+
+        await RSVPModel.insertMany(rsvpData);
+        console.log("RSVPs seeded successfully.");
 
     } catch (error) {
         console.log("Error seeding database: ", error);

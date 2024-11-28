@@ -11,7 +11,7 @@ const RSVPSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    response: {
+    status: {
         type: String,
         enum: ["yes", "no", "maybe"],
         required: true
@@ -27,3 +27,5 @@ const RSVPModel = mongoose.model("RSVP", RSVPSchema);
 module.exports = {
     RSVPModel
 }
+
+
