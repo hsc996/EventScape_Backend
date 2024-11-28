@@ -52,9 +52,24 @@ async function findRSVPsByResponse(eventId, response){
 }
 
 
+async function findOneRSVP(query){
+    try {
+        console.log("Executing query in findOneRSVP:", query);
+        const result = await RSVPModel.findOne(query);
+        if (!result) {
+            console.warn("No RSVP found for query:", query);
+        }
+        return result;
+    } catch (error) {
+        console.error("Database error in findOneRSVP:", error.message);
+        throw new Error("Error finding RSVP status, please try again.");
+    }
+}
+
 module.exports = {
     createRSVP,
     updateRSVP,
     deleteRSVP,
-    findRSVPsByResponse
+    findRSVPsByResponse,
+    findOneRSVP
 }

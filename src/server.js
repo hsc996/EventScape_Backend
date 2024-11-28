@@ -15,7 +15,7 @@ app.get("/", (request, response) => {
 const AuthController = require("./controllers/AuthControllers.js");
 app.use("/account", AuthController);
 
-const UserController = require("./controllers/userController.js");
+const UserController = require("./controllers/UserController.js");
 app.use("/user", UserController);
 
 const EventController = require("./controllers/EventController.js");
