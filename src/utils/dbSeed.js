@@ -2,6 +2,7 @@ const { dbConnect, dbDisconnect } = require('../functions/dbFunctions.js');
 const { UserModel } = require('../models/UserModel.js');
 const { EventModel } = require('../models/EventModel.js');
 const { RSVPModel } = require('../models/RSVPModel.js');
+const { FollowerModel } = require("../models/FollowerModel.js");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -13,6 +14,8 @@ async function dropAndSeed(){
         await UserModel.deleteMany({});
         await EventModel.deleteMany({});
         await RSVPModel.deleteMany({});
+        await FollowerModel.deleteMany({});
+        
         console.log("Old collections deleted.")
 
         const users = [
@@ -110,6 +113,24 @@ async function dropAndSeed(){
 
         await RSVPModel.insertMany(rsvpData);
         console.log("RSVPs seeded successfully.");
+
+        const followData = [
+            {
+                followerId: insertedUsers[0]._id,
+                followingId: insertedUsers[1]._id
+            },
+            {
+                followerId: insertedUsers[1]._id,
+                followingId: insertedUsers[2]._id
+            },
+            {
+                followerId: insertedUsers[2]._id,
+                followingId: insertedUsers[1]._id
+            }
+        ];
+
+        await FollowerModel.insertMany(followData);
+        console.log("Followers seeded successfully.");
 
     } catch (error) {
         console.log("Error seeding database: ", error);

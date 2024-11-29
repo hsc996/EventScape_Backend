@@ -3,7 +3,7 @@ const { EventModel } = require("../../models/EventModel.js");
 async function createEvent(eventName, description, eventDate, location, host, attendees){
     try {
 
-        let result = await EventModel.create({
+        const result = await EventModel.create({
             eventName: eventName,
             description: description,
             eventDate: eventDate,
@@ -24,7 +24,7 @@ async function createEvent(eventName, description, eventDate, location, host, at
 
 async function findOneEvent(query){
     try {
-        let result = await EventModel.findOne(query);
+        const result = await EventModel.findOne(query);
 
         return result;
     } catch (error) {
@@ -36,7 +36,7 @@ async function findOneEvent(query){
 async function findActiveEventsForUser(userId){
     try {
 
-        let events = await EventModel.find({
+        const events = await EventModel.find({
             attendees: userId,
             isActive: true
         });
@@ -51,7 +51,7 @@ async function findActiveEventsForUser(userId){
 
 async function updateOneEvent(query, updateData){
     try {
-        let result = await EventModel.findOneAndUpdate(query, updateData, { new: true });
+        const result = await EventModel.findOneAndUpdate(query, updateData, { new: true });
 
         return result;
     } catch (error) {
@@ -63,7 +63,7 @@ async function updateOneEvent(query, updateData){
 
 async function deleteOneEvent(query){
     try {
-        let result = await EventModel.deleteOne(query);
+        const result = await EventModel.deleteOne(query);
 
         return result;
     } catch (error) {

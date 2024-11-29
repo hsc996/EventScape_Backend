@@ -24,6 +24,9 @@ app.use("/event", EventController);
 const RSVPController = require("./controllers/RSVPController.js");
 app.use("/rsvp", RSVPController);
 
+const FollowController = require("./controllers/FollowerController.js");
+app.use("/follow", FollowController)
+
 module.exports = {
     app
 }
