@@ -25,7 +25,10 @@ const RSVPController = require("./controllers/RSVPController.js");
 app.use("/rsvp", RSVPController);
 
 const FollowController = require("./controllers/FollowerController.js");
-app.use("/follow", FollowController)
+app.use("/follow", FollowController);
+
+const ThemeController = require("./controllers/ThemeController.js");
+app.use("/themes", ThemeController);
 
 module.exports = {
     app

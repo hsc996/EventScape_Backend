@@ -57,7 +57,7 @@ async function findOneRSVP(query){
         console.log("Executing query in findOneRSVP:", query);
         const result = await RSVPModel.findOne(query);
         if (!result) {
-            console.warn("No RSVP found for query:", query);
+            console.error("No RSVP found for query:", query);
         }
         return result;
     } catch (error) {
