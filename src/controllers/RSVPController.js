@@ -16,7 +16,7 @@ router.post("/attending/:eventId", validateUserAuth, async (request, response) =
     try {
         if (!userId || !status){
             return response.status(400).json({
-                message: "Please provide both userId and status."
+                message: "Please provide both user ID and status."
             });
         }
 
@@ -61,7 +61,7 @@ router.patch("/update", validateUserAuth, async (request, response) => {
     try {
         if (!eventId || !status){
             return response.status(400).json({
-                messgae: "Please provide both eventId and status."
+                message: "Please provide both eventId and status."
             });
         }
 
