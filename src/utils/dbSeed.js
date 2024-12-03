@@ -3,6 +3,7 @@ const { UserModel } = require('../models/UserModel.js');
 const { EventModel } = require('../models/EventModel.js');
 const { RSVPModel } = require('../models/RSVPModel.js');
 const { FollowerModel } = require("../models/FollowerModel.js");
+const { ThemeTemplateModel } = require("../models/ThemeModel.js");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -15,6 +16,7 @@ async function dropAndSeed(){
         await EventModel.deleteMany({});
         await RSVPModel.deleteMany({});
         await FollowerModel.deleteMany({});
+        await ThemeTemplateModel.deleteMany({});
         
         console.log("Old collections deleted.")
 
@@ -128,6 +130,28 @@ async function dropAndSeed(){
                 followingId: insertedUsers[1]._id
             }
         ];
+
+        const themes = [
+            {
+                themeName: "Light Theme",
+                description: "A light and bright theme for daytime use.",
+                styles: {
+                    backgroundColor: "#ffffff",
+                    color: "#000000"
+                }
+            },
+            {
+                themeName: "Dark Theme",
+                description: "A dark theme suitable for low-light environments.",
+                styles: {
+                    backgroundColor: "#333333",
+                    color: "#ffffff"
+                }
+            }
+        ];
+
+        await ThemeTemplateModel.insertMany(themes);
+        console.log("Themes seeded successfully.");
 
         await FollowerModel.insertMany(followData);
         console.log("Followers seeded successfully.");
