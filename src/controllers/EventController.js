@@ -1,8 +1,13 @@
 const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
-const { EventModel } = require("../controllers/EventController.js");
-const { createEvent, findOneEvent, updateOneEvent, deleteOneEvent, findActiveEventsForUser } = require("../utils/crud/EventCrud.js");
+const {
+    createEvent,
+    findOneEvent,
+    updateOneEvent,
+    deleteOneEvent,
+    findActiveEventsForUser
+} = require("../utils/crud/EventCrud.js");
 
 const router = express.Router();
 

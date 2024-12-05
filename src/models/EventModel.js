@@ -33,6 +33,11 @@ const EventSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }],
+    theme: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ThemeTemplate",
+        default: null
+    },
     isActive: {
         type: Boolean,
         default: true

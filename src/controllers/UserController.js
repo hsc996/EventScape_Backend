@@ -1,9 +1,11 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 
 const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
+const { sendError, validatePassword, hashPassword } = require("../functions/helperFunctions.js");
 const { UserModel } = require("../models/UserModel.js");
 const { validateUserAuth } = require('../middleware/validateUserAuth.js');
+
+const saltRounds = 10;
 
 const router = express.Router();
 
@@ -12,21 +14,23 @@ const router = express.Router();
 
 router.get("/search/:userId", async (request, response) => {
     try {
+        const { userId } = request.params;
         
-        let result = await findOneUser({_id: request.params.userId});
+        let result = await findOneUser({_id: userId});
 
         if (!result){
-            return response.status(404).json({error: "User not found."});
+            return sendError(response, 404, "User not found.");
         }
 
         console.log("User found: " + JSON.stringify(result));
 
-        response.json({
+        response.status(200).json({
+            message: `User with ID ${userId} found.`,
             data: result
         });
     } catch (error) {
         console.error("Error finding user: ", error);
-        response.status(500).json({error: "Internal Server Error."});
+        sendError(response, 500, "Internal Server Error.");
     }
 });
 
@@ -41,20 +45,15 @@ router.patch('/:userId', validateUserAuth, async (request, response) => {
         if (updateData.username){
             const existingUser = await UserModel.findOne({ username: updateData.username});
             if (existingUser && existingUser._id.toString() !== request.params.userId){
-                return response.status(400).json({
-                    message:"Username already taken. Please choose a different one."
-                });
+                return sendError(response, 400, "Username already taken. Please choose a different one.");
             }
         }
 
         if (updateData.password){
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-            if (!passwordRegex.test(updateData.password)){
-                return response.status(400).json({
-                    message: "Password must be at least 8 characters and include at least one letter, one number, and one special character."
-                });
+            if (!validatePassword(updateData.password)){
+                return sendError(response, 400, "Password must be at least 8 characters and include at least one letter, one number, and one special character.");
             }
-            updateData.password = await bcrypt.hash(updateData.password, 10);
+            updateData.password = await hashPassword(updateData.password);
         }
 
         let result = await updateOneUser(
@@ -64,16 +63,16 @@ router.patch('/:userId', validateUserAuth, async (request, response) => {
 
         // If no result, return error message
         if (!result){
-            return response.status(404).json({error: "User not found."});
+            return sendError(response, 404, "User not found.");
         }
 
-        response.json({
+        response.status(200).json({
             message: "Profile data updated successfully.",
             data: result
-        })
+        });
     } catch (error) {
         console.error("Error updating user data: ", error);
-        response.status(500).json({error: "Internal Server Error."});
+        sendError(response, 500, "Internal Server Error.");
     }
 });
 
@@ -89,7 +88,7 @@ router.delete("/delete/:userId", validateUserAuth,  async (request, response) =>
         let result = await deleteOneUser({_id: userToBeDeleted});
 
         if (!result){
-            return response.status(404).json({error: "User not found."});
+            return sendError(response, 404, "User not found.");
         }
 
         console.log("Profile with ID " + JSON.stringify(result) + "deleted successfully.");
@@ -101,7 +100,7 @@ router.delete("/delete/:userId", validateUserAuth,  async (request, response) =>
 
     } catch (error) {
         console.error("Error deleting user data: ", error);
-        response.status(500).json({error: "Internal Server Error."});
+        sendError(response, 500, "Internal Server Error.");
     }
 });
 

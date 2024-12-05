@@ -4,8 +4,11 @@ const saltRounds = 10;
 
 // Helper functions
 
-function sendError(response, status, message){
-    return response.status(status).json({ message });
+function sendError(response, statusCode, message, detailedMessage = null) {
+    response.status(statusCode).json({
+        error: message,
+        message: detailedMessage || message
+    });
 }
 
 function validateEmail(email){
@@ -31,5 +34,5 @@ module.exports = {
     validateEmail,
     validatePassword,
     hashPassword,
-    comparePassword
+    comparePassword,
 }
