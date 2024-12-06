@@ -9,7 +9,7 @@ const {
 } = require("../utils/crud/ThemeCrud.js");
 const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 const { sendError } = require("../functions/helperFunctions.js");
-const { handleRouteError } = require("../middleware/routerMiddleware.js");
+const { handleRouteError, checkEventPermission } = require("../middleware/routerMiddleware.js");
 
 const router = express.Router();
 
@@ -17,6 +17,7 @@ const router = express.Router();
 // Get all theme templates (available for users to choose from)
 router.get(
     "/",
+    validateUserAuth,
     handleRoute(async (request, response) => {
         try {
             const result = await findAllTemplates();
@@ -32,6 +33,7 @@ router.get(
 // Find specific theme template
 router.get(
     "/:themeId",
+    validateUserAuth,
     handleRoute(async (request, response) => {
         const { themeId } = request.params;
 
@@ -52,6 +54,7 @@ router.get(
 router.post(
     "/select/:eventId",
     validateUserAuth,
+    checkEventPermission,
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
         const { themeId } = request.body;
@@ -120,6 +123,8 @@ router.delete(
         }
     })
 );
+
+
 
 
 module.exports = router;

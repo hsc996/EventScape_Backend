@@ -51,10 +51,14 @@ async function findTemplate(themeId){
 
 
 // Update a theme template
-async function updateThemeSelection(eventId, themeId, userId) {
+async function updateThemeSelection(eventId, themeId) {
     try {
         if (!mongoose.Types.ObjectId.isValid(eventId) || !mongoose.Types.ObjectId.isValid(themeId)){
             throw new AppError("Invalid event or theme ID.", 400);
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(themeId)) {
+            throw new AppError("Invalid theme ID.", 400);
         }
 
         const event = await EventModel.findById(eventId);
@@ -62,8 +66,9 @@ async function updateThemeSelection(eventId, themeId, userId) {
             throw new AppError("Event ID not found.", 404);
         }
 
-        if (event.host.toString() !== userId){
-            throw new AppError("You are not authorised to update this event's theme.", 403);
+        const theme = await ThemeTemplateModel.findById(themeId);
+        if (!theme){
+            throw new AppError("Theme ID not found.", 404);
         }
 
         if (event.theme && event.theme.toString() === themeId){
