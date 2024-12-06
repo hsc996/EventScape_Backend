@@ -16,18 +16,25 @@ class AppError extends Error {
 
 
 function handleRouteError(response, error, defaultMessage = "An error occurred") {
-    console.error("Error: ", error.message || defaultMessage);
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!isProduction) {
+        console.error("Error: ", error.message || defaultMessage);
+    } else {
+        console.error("Error: An error occurred in production, details not exposed.");
+    }
 
     if (error instanceof AppError) {
         return response.status(error.statusCode).json({
-            error: error.message,
+            error: isProduction ? "An error occurred, please try again later." : error.message,
         });
     }
 
     return response.status(500).json({
-        error: defaultMessage,
+        error: isProduction ? "An unexpected error occurred, please try again later." : defaultMessage,
     });
 }
+
 
 
 function validateEmail(email){

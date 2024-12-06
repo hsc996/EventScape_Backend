@@ -1,5 +1,8 @@
 const { UserModel } = require("../../models/UserModel.js");
 
+
+// Sign up route - accessed by Auth Controllers
+
 async function createUser(username, email, password, isAdmin){
     try {
 
@@ -20,6 +23,9 @@ async function createUser(username, email, password, isAdmin){
     }
 }
 
+
+// Get one user - accessed by User Controller
+
 async function findOneUser(query){
    try {
         let result = await UserModel.findOne(query);
@@ -32,6 +38,9 @@ async function findOneUser(query){
    }
 }
 
+
+// Get many users - accessed by User Controllers
+
 async function findManyUsers(query){
     try {
         let result = await UserModel.find(query);
@@ -43,6 +52,9 @@ async function findManyUsers(query){
     }
 }
 
+
+// Update user profile  - accessed by User Controllers
+
 async function updateOneUser(query, updateData){
     try {
         let result = await UserModel.findOneAndUpdate(query, updateData, { new: true });
@@ -53,6 +65,9 @@ async function updateOneUser(query, updateData){
         throw new Error("Error updating profile, please try again.")
     }
 }
+
+
+// Delete user profile - accessed by User Controllers
 
 async function deleteOneUser(query){
     try {
