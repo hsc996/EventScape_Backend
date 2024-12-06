@@ -30,9 +30,6 @@ app.use("/follow", FollowController);
 const ThemeController = require("./controllers/ThemeController.js");
 app.use("/themes", ThemeController);
 
-const EventSearchController = require("./controllers/EventSearchControllers.js");
-app.use("/search", EventSearchController);
-
 module.exports = {
     app
 }
