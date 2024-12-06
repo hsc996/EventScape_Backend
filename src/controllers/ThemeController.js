@@ -6,7 +6,7 @@ const {
     findAllTemplates,
     updateThemeSelection,
     removeThemeSelection
-} = require("../utils/crud/ThemeCrud.js");
+    } = require("../utils/crud/ThemeCrud.js");
 const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 const { sendError } = require("../functions/helperFunctions.js");
 const { handleRouteError, checkEventPermission } = require("../middleware/routerMiddleware.js");

@@ -1,55 +1,60 @@
 const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
-const { RSVPModel } = require("../models/RSVPModel.js");
-const { createRSVP, updateRSVP, deleteRSVP, findRSVPsByResponse, findOneRSVP } = require("../utils/crud/RSVPCrud.js");
+const {
+    createRSVP,
+    updateRSVP,
+    deleteRSVP,
+    findRSVPsByResponse,
+    findOneRSVP
+    } = require("../utils/crud/RSVPCrud.js");
+const { handleRoute,sendSuccessResponse, AppError } = require("../middleware/routerMiddleware.js");
+const { sendError, checkRSVPExistence } = require("../functions/helperFunctions.js");
+const { handleRouteError, checkEventPermission } = require("../middleware/routerMiddleware.js");
+
 
 const router = express.Router();
 
 
 // RSVP YES/NO/MAYBE
 
-router.post("/attending/:eventId", validateUserAuth, async (request, response) => {
-    const { userId, status } = request.body;
-    const { eventId } = request.params;
+router.post(
+    "/attending/:eventId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        const { eventId } = request.params;
+        const { userId } = request.authUserData;
+        const { status } = request.body;
 
-    try {
-        if (!userId || !status){
-            return response.status(400).json({
-                message: "Please provide both user ID and status."
-            });
+        if (!status){
+            throw new AppError("Status is required.", 400);
         }
 
         if (!["yes", "maybe", "no"].includes(status)){
-            return response.status(400).json({
-                message: "Invalid response type."
-            });
+            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
         }
 
-        const existingRsvp = await findOneRSVP({ eventId, userId });
-        if (existingRsvp){
-            return response.status(400).json({
-                message: "You have already RSVP'd to this event. Use the PATCH route to update RSVP status."
-            })
+        try {
+            const existingRsvp = await checkRSVPExistence(eventId, userId);
+            if (existingRsvp){
+                throw new AppError("You have already RSVP'd to this event. Use the PATCH route to update RSVP status.", 400);
+            }
+
+            const rsvpData = {
+                eventId,
+                userId,
+                status
+            };
+
+            const newRSVP = await createRSVP(rsvpData);
+
+            sendSuccessResponse(response, `RSVP for event ${eventId} by use ${userId} was recorded successfully.`, newRSVP);
+
+        } catch (error) {
+            handleRouteError(response, error, "Error posting RSVP response, please try again later.");
         }
-
-        const rsvpData = {
-            eventId,
-            userId,
-            status: status
-        };
-
-        const newRSVP = await RSVPModel.create(rsvpData);
-
-        response.status(201).json({
-            message: `RSVP for event ${eventId} by user ${userId} was recorded successfully.`,
-            data: newRSVP
-        });
-    } catch (error) {
-        console.error("Error posting RSVP response: ", error);
-        response.status(500).json({ error: "Internal Server Error. Please try again."})
-    }
-});
+    })
+);
 
 
 
@@ -65,7 +70,7 @@ router.patch("/update", validateUserAuth, async (request, response) => {
             });
         }
 
-        const existingRsvp = await findOneRSVP({ eventId, userId});
+        const existingRsvp = await updateRSVP({ eventId, userId});
         if (!existingRsvp){
             return response.status(400).json({
                 message: "You have not RSVP'd to this event yet. Please use the POST route to RSVP."

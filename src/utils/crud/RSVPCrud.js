@@ -1,4 +1,5 @@
 const { RSVPModel } = require("../../models/RSVPModel.js");
+const { AppError } = require("../../middleware/routerMiddleware.js");
 
 // Post a yes/no/maybe RSVP on an event
 async function createRSVP(data){
@@ -7,7 +8,12 @@ async function createRSVP(data){
         return result;
     } catch (error) {
         console.error("Error posting RSVP response: ", error);
-        throw new Error("Error posting RSVP response, please try again.");
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error posting RSVP response, please try again.", 500);
     }
 }
 
