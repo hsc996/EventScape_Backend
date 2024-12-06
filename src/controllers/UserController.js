@@ -46,11 +46,6 @@ router.patch(
             const userId = request.authUserData.userId;
             const updateData = request.body;
 
-            const existingUser = await UserModel.findById(userId);
-            if (!existingUser) {
-                throw new AppError("User not found.", 404);
-            }
-
             if (updateData.username) {
                 const duplicateUser = await UserModel.findOne({ username: updateData.username });
                 if (duplicateUser && duplicateUser._id.toString() !== userId) {
@@ -74,10 +69,7 @@ router.patch(
                 throw new AppError("User not found.", 404);
             }
 
-            response.status(200).json({
-                message: "Profile data updated successfully.",
-                data: result
-            });
+            sendSuccessResponse(response, "Profile data updated successfully.", result);
         } catch (error) {
             handleRouteError(response, error, "Error updating profile data, please try again later.");
         }
@@ -93,10 +85,9 @@ router.delete(
     validateUserAuth,
     handleRoute(async (request, response) => {
         try {
+            const userId = request.authUserData.userId;
 
-            let { userId } = request.authUserData;
-
-            let result = await deleteOneUser({_id: userId});
+            const result = await deleteOneUser({_id: userId});
 
             if (!result){
                 throw new AppError("User not found.", 404);
