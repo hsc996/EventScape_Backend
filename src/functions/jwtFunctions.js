@@ -2,12 +2,12 @@ const jwt = require("jsonwebtoken");
 
 let jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-function generateJWT(userId, username, roles = null){
+function generateJWT(userId, username, isAdmin = false){
     return jwt.sign(
         {
             userId: userId,
             username:username,
-            roles: roles
+            isAdmin: isAdmin
         },
         jwtSecretKey,
         {
@@ -21,7 +21,11 @@ function decodeJWT(tokenToDecode) {
         return jwt.verify(tokenToDecode, jwtSecretKey);
     } catch (error) {
         console.error("JWT verification failed:", error);
-        throw new Error("Invalid or expired token.")
+
+        if (error.name === 'TokenExpiredError'){
+            throw new Error("Token has expired.");
+        }
+        throw new Error("Invalid or expired token.");
     }
 }
 

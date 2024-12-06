@@ -33,6 +33,11 @@ const EventSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }],
+    invited: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    }],
     theme: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "ThemeTemplate",

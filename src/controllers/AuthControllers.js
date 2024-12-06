@@ -42,7 +42,7 @@ router.post("/signup", async (request, response) => {
 
         console.log(`User created successfully: ${newUser.username} (${newUser.email})`);
     
-        let newJwt = generateJWT(newUser._id, newUser.username);
+        let newJwt = generateJWT(newUser._id, newUser.username, newUser.isAdmin);
     
         response.status(200).json({
             jwt: newJwt,
@@ -89,14 +89,15 @@ router.post("/signin", async (request, response) => {
             return sendError(response, 404, "Invalid password.");
         }
 
-        let newJwt = generateJWT(user._id, user.username);
+        let newJwt = generateJWT(user._id, user.username, user.isAdmin);
 
         response.status(200).json({
             jwt: newJwt,
             user: {
                 id: user._id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isAdmin: user.isAdmin
             }
         });
     } catch (error) {

@@ -6,177 +6,204 @@ const {
     findOneEvent,
     updateOneEvent,
     deleteOneEvent,
-    findActiveEventsForUser
+    findActiveEventsForUser,
+    findPrivateEvent
 } = require("../utils/crud/EventCrud.js");
+const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
+const { sendError } = require("../functions/helperFunctions.js");
+const { handleRouteError } = require("../middleware/routerMiddleware.js");
 
 const router = express.Router();
 
 
-// Find all active events user is attending -- NOT TESTED YET
+// Find all active events user is attending
 
-router.get("/attending/:userId", async (request, response) => {
-    try {
-        const { userId } = request.params;
+router.get(
+    "/attending",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        try {
+            const { userId } = request.authUserData;
 
-        if (!userId){
-            return response.status(404).json({error: "User not found."});
+            if (!userId){
+                return sendError(response, 404, "User not found.");
+            }
+        
+            const result = await findActiveEventsForUser(userId);
+        
+            if (!result.length){
+                return sendError(response, 404, "No active events found for this user.");
+            }
+        
+            sendSuccessResponse(response, "Active events retrieved successfully.", result);
+        } catch (error) {
+            handleRouteError(response, error, "Error retrieving active events for this user, please try again later.");
         }
-    
-        const events = await findActiveEventsForUser(userId);
-    
-        if (!events.length){
-            return response.status(404).json({error: "No active events found for this user."});
+    })
+);
+
+
+// View Event (Public)
+
+router.get(
+    "/public/:eventId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        try {
+            const { eventId } = request.params;
+
+            let result = await findOneEvent({_id: eventId});
+
+            if (!result){
+                return sendError(response, 404, "Event not found.");
+            }
+
+            console.log("Event found: " + JSON.stringify(result));
+
+            sendSuccessResponse(response, "Event retrieved successfully", result);
+
+        } catch (error) {
+            handleRouteError(response, error, "Error retrieving event, please try again later.");
         }
-    
-        response.status(200).json({ message: "Active events retrieved successfully", data: events });
-    } catch (error) {
-        console.error("Error retrieving active events: ", error.message);
-        response.status(500).json({ error: "Internal server error. Please try again later." });
-    }
-})
+    }));
 
 
-// View Event
+// View Private Event (Invite Only)
 
-router.get("/search/:eventId", async (request, response) => {
-    try {
+router.get(
+    "/private/:eventId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        try {
+            const { eventId } = request.params;
+            const { userId } = request.authUserData;
 
-        let result = await findOneEvent({_id: request.params.eventId});
+            let result = await findPrivateEvent(eventId, userId);
 
-        if (!result){
-            return response.status(404).json({error: "Event not found."});
+            sendSuccessResponse(response, "Event retrieved successfully", result);
+
+        } catch (error) {
+            handleRouteError(response, error, "Error retrieving event, please try again later.");
         }
-
-        console.log("User found: " + JSON.stringify(result));
-
-        response.json({
-            data: result
-        });
-
-    } catch (error) {
-        console.error("Error finding event: ", error);
-        response.status(500).json({error: "Internal Server Error."});
-    }
-});
+    })
+);
 
 
 
 // Create Event
 
-router.post("/create", validateUserAuth, async (request, response) => {
-    try {
-        
-        const {
-            eventName,
-            description,
-            eventDate,
-            location,
-            host,
-            attendees
-        } = request.body;
+router.post(
+    "/create",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        try {
+            const {
+                eventName,
+                description,
+                eventDate,
+                location,
+                host,
+                attendees
+            } = request.body;
 
-        if (!eventName || !description || !eventDate || !location || !host || !attendees){
-            return response.status(400).json({
-                message: "Please complete all of the required fields."
-            });
-        }
+            if (!eventName || !description || !eventDate || !location || !host || !attendees){
+                return response.status(400).json({
+                    message: "Please complete all of the required fields."
+                });
+            }
+    
+            if (new Date(eventDate) <= new Date()) {
+                return response.status(400).json({
+                    message: "Event date must be in the future."
+                });
+            }
+    
+            if (location.trim().length < 3) {
+                return response.status(400).json({
+                    message: "Location must be at least 3 characters long."
+                });
+            }
 
-        if (new Date(eventDate) <= new Date()) {
-            return response.status(400).json({
-                message: "Event date must be in the future."
-            });
-        }
+            let newEvent = await createEvent(eventName, description, eventDate, location, host, attendees);
 
-        if (location.trim().length < 3) {
-            return response.status(400).json({
-                message: "Location must be at least 3 characters long."
-            });
-        }
+            console.log(`Event created successfully: ${newEvent.eventName} at ${newEvent.location}`);
 
-        let newEvent = await createEvent(eventName, description, eventDate, location, host, attendees);
-
-        console.log(`Event created successfully: ${newEvent.eventName} at ${newEvent.location}`);
-
-        response.status(201).json({
-            message: "Event created successfully.",
-            event: {
+            sendSuccessResponse(response, "Event created successfully.", {
                 id: newEvent._id,
                 eventName: newEvent.eventName,
                 description: newEvent.description,
                 eventDate: newEvent.eventDate,
                 location: newEvent.location,
                 host: newEvent.host,
-                attendees: newEvent.attendees
-            }
-        });
+                attendees: newEvent.attendees,
+            });
 
-    } catch (error) {
-        console.error("Error creating event: ", error);
-        return response.status(500).json({
-            message: error.message || "An error occurred while creating the event."
-        });
-    }
-});
-
+        } catch (error) {
+            handleRouteError(response, error, "An error occurred while creating the event, please try again later.");
+        }
+    })
+);
 
 
 
 // Update Event
 
-router.patch("/update/:eventId", validateUserAuth, async (request, response) => {
-    try {
-        const { eventId } = request.params;
-        const updateData = request.body;
+router.patch(
+    "/update/:eventId",
+    validateUserAuth,
+    checkEventPermission,
+    handleRoute(async (request, response) => {
+        try {
+            const { eventId } = request.params;
+            const updateData = request.body;
 
-        if (!eventId){
-            return response.status(404).json({error: "Event not found."});
+            if (!eventId){
+                return sendError(response, 404, "Event not found.");
+            }
+
+            const updatedEvent = await updateOneEvent(
+                {_id: eventId},
+                updateData
+            );
+
+            if (!updatedEvent){
+                return sendError(response, 404, "Event not found or could not be updated.");
+            }
+
+            sendSuccessResponse(response, "Event data updated successfully.", updatedEvent);
+
+        } catch (error) {
+            handleRouteError(response, error, "Event could not be updated at this time, please try again later.");
         }
-
-        const updatedEvent = await updateOneEvent(
-            {_id: eventId},
-            updateData
-        );
-
-        if (!updatedEvent){
-            return response.status(404).json({error: "Event not found or could not be updated."});
-        }
-
-        response.json({
-            message: "Event data updated successfully.",
-            data: updatedEvent
-        })
-
-    } catch (error) {
-        console.error("Error updating event data: ", error);
-        response.status(500).json({error: "Internal Server Error."})
-    }
-});
+    })
+);
 
 
 
 // Delete
-router.delete("/delete/:eventId", validateUserAuth, async (request, response) => {
-    try {
-        let eventToBeDeleted = request.params.eventId;
+router.delete(
+    "/delete/:eventId",
+    validateUserAuth,
+    checkEventPermission,
+    handleRoute(async (request, response) => {
+        try {
+            const { eventId } = request.params;
 
-        let deletedEvent = await deleteOneEvent({_id: eventToBeDeleted});
+            let result = await deleteOneEvent({_id: eventId});
 
-        if (!deletedEvent){
-            return response.status(404).json({error: "Event not found."});
+            if (!result){
+                return sendError(response, 404, "Event not found.");
+            }
+
+            console.log("Event with ID " + JSON.stringify(result) + "deleted successfully.");
+
+            sendSuccessResponse(response, "Event data deleted successfully.", result)
+
+        } catch (error) {
+            handleRouteError(response, error, "Event could not be deleted at this time, please try again later.");
         }
-
-        console.log("Event with ID " + JSON.stringify(deletedEvent) + "deleted successfully.");
-
-        response.json({
-            message: "Event data deleted successfully.",
-            data: deletedEvent
-        })
-
-    } catch (error) {
-        console.error("Error deleting event data: ", error);
-        response.status(500).json({error: "Internal Server Error."});
-    }
-});
+    })
+);
 
 
 module.exports = router;
