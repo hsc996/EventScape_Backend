@@ -10,8 +10,7 @@ const {
     findPrivateEvent
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
-const { sendError } = require("../functions/helperFunctions.js");
-const { handleRouteError } = require("../middleware/routerMiddleware.js");
+const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
 
 const router = express.Router();
 
@@ -26,13 +25,13 @@ router.get(
             const { userId } = request.authUserData;
 
             if (!userId){
-                return sendError(response, 404, "User not found.");
+                throw new AppError("User not found.", 404);
             }
         
             const result = await findActiveEventsForUser(userId);
         
             if (!result.length){
-                return sendError(response, 404, "No active events found for this user.");
+                throw new AppError("No active events found for this user.", 404);
             }
         
             sendSuccessResponse(response, "Active events retrieved successfully.", result);
@@ -52,10 +51,10 @@ router.get(
         try {
             const { eventId } = request.params;
 
-            let result = await findOneEvent({_id: eventId});
+            let result = await findOneEvent({ _id: eventId });
 
             if (!result){
-                return sendError(response, 404, "Event not found.");
+                throw new AppError("Event not found.", 404);
             }
 
             console.log("Event found: " + JSON.stringify(result));
@@ -107,21 +106,15 @@ router.post(
             } = request.body;
 
             if (!eventName || !description || !eventDate || !location || !host || !attendees){
-                return response.status(400).json({
-                    message: "Please complete all of the required fields."
-                });
+                throw new AppError("Please complete all of the required fields.", 400);
             }
     
             if (new Date(eventDate) <= new Date()) {
-                return response.status(400).json({
-                    message: "Event date must be in the future."
-                });
+                throw new AppError("Event date must be in the future.", 400);
             }
     
             if (location.trim().length < 3) {
-                return response.status(400).json({
-                    message: "Location must be at least 3 characters long."
-                });
+                throw new AppError("Location must be at least 3 characters long.", 400);
             }
 
             let newEvent = await createEvent(eventName, description, eventDate, location, host, attendees);
@@ -158,7 +151,7 @@ router.patch(
             const updateData = request.body;
 
             if (!eventId){
-                return sendError(response, 404, "Event not found.");
+                throw new AppError("Event not found.", 404);
             }
 
             const updatedEvent = await updateOneEvent(
@@ -167,7 +160,7 @@ router.patch(
             );
 
             if (!updatedEvent){
-                return sendError(response, 404, "Event not found or could not be updated.");
+                throw new AppError("Event not found or could not be updated.", 404);
             }
 
             sendSuccessResponse(response, "Event data updated successfully.", updatedEvent);
@@ -192,7 +185,7 @@ router.delete(
             let result = await deleteOneEvent({_id: eventId});
 
             if (!result){
-                return sendError(response, 404, "Event not found.");
+                throw new AppError("Event not found.", 404);
             }
 
             console.log("Event with ID " + JSON.stringify(result) + "deleted successfully.");

@@ -5,12 +5,12 @@ const {
     createRSVP,
     updateRSVP,
     deleteRSVP,
-    findRSVPsByResponse,
-    findOneRSVP
+    findRSVPsByResponse
     } = require("../utils/crud/RSVPCrud.js");
-const { handleRoute,sendSuccessResponse, AppError } = require("../middleware/routerMiddleware.js");
-const { sendError, checkRSVPExistence } = require("../functions/helperFunctions.js");
-const { handleRouteError, checkEventPermission } = require("../middleware/routerMiddleware.js");
+const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+const { checkRSVPExistence, handleRouteError, AppError } = require("../functions/helperFunctions.js");
+const { checkRsvpPermission } = require("../middleware/routerMiddleware.js");
+const { updateEventAttendance } = require("../functions/updateEventAttendance.js");
 
 
 const router = express.Router();
@@ -36,123 +36,98 @@ router.post(
 
         try {
             const existingRsvp = await checkRSVPExistence(eventId, userId);
-            if (existingRsvp){
-                throw new AppError("You have already RSVP'd to this event. Use the PATCH route to update RSVP status.", 400);
+
+            if (existingRsvp) {
+                const updatedData = { status };
+
+                const updatedRSVP = await updateRSVP({ eventId, userId }, updatedData);
+
+                await updateEventAttendance(eventId, userId, status);
+
+                sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
+            } else {
+                const rsvpData = {
+                    eventId,
+                    userId,
+                    status
+                };
+
+                const newRSVP = await createRSVP(rsvpData);
+
+                sendSuccessResponse(response, `RSVP for event ${eventId} by user ${userId} was recorded successfully.`, newRSVP);
             }
 
-            const rsvpData = {
-                eventId,
-                userId,
-                status
-            };
-
-            const newRSVP = await createRSVP(rsvpData);
-
-            sendSuccessResponse(response, `RSVP for event ${eventId} by use ${userId} was recorded successfully.`, newRSVP);
-
         } catch (error) {
-            handleRouteError(response, error, "Error posting RSVP response, please try again later.");
+            handleRouteError(response, error, "Error handling RSVP response, please try again later.");
         }
     })
 );
 
 
-
-// Update RSVP
-router.patch("/update", validateUserAuth, async (request, response) => {
-    const { eventId, status } = request.body;
-    const { userId } = request.authUserData;
-
-    try {
-        if (!eventId || !status){
-            return response.status(400).json({
-                message: "Please provide both eventId and status."
-            });
-        }
-
-        const existingRsvp = await updateRSVP({ eventId, userId});
-        if (!existingRsvp){
-            return response.status(400).json({
-                message: "You have not RSVP'd to this event yet. Please use the POST route to RSVP."
-            });
-        }
-
-        existingRsvp.status = status;
-        await existingRsvp.save();
-
-        response.status(200).json({
-            message: `RSVP for event ${eventId} updated successfully.`,
-            data: existingRsvp
-        });
-
-
-
-    } catch (error) {
-        console.error("Error updating RSVP status: ", error);
-        throw new Error("Error updating RSVP status, please try again.");
-    }
-});
-
-
-
 // Delete RSVP
-router.delete("/delete/:rsvpId", validateUserAuth, async (request, response) => {
-    const { rsvpId } = request.params;
-    const { userId } = request.authUserData;
+router.delete(
+    "/delete/:rsvpId",
+    validateUserAuth,
+    checkRsvpPermission,
+    handleRoute(async (request, response) => {
+        const { rsvpId } = request.params;
 
 
-    try {
-        if (!rsvpId){
-            return response.status(400).json({
-                message: "RSVP ID is required."
-            });
+        try {
+            if (!rsvpId){
+                throw new AppError("RSVP ID is required.", 400);
+            }
+
+            const result = await deleteRSVP({ _id: rsvpId });
+
+            if (result.deletedCount === 0){
+                throw new AppError("Error removing RSVP, please try again.", 400);
+            }
+
+            sendSuccessResponse(response, "RSVP removed successfully.");
+
+        } catch (error) {
+            handleRouteError(response, error, "Error removing RSVP, please try again.");
         }
+    })
+);
 
-        const existingRsvp = await findOneRSVP({ _id: rsvpId, userId});
-        if (!existingRsvp){
-            return response.status(404).json({
-                message: "RSVP not found or you are not authorised to delete this RSVP."
-            })
+
+// Find list of RSVPs by status on one particular event
+
+router.get(
+    "/status/:eventId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        const { eventId } = request.params;
+        const { status } = request.query;
+
+        try {
+            if (!eventId) {
+                throw new AppError("Event ID is required.", 400);
+            }
+
+            // Prepare the query object
+            const query = { eventId };
+            if (status) {
+                query.response = status;  // Ensure 'status' is passed as 'response'
+            }
+
+            console.log("Query to find RSVPs:", query); // Log the query to debug
+
+            const rsvps = await findRSVPsByResponse(query);
+            if (!rsvps || rsvps.length === 0) {
+                throw new AppError("No RSVPs found for the given event.", 404);
+            }
+
+            sendSuccessResponse(response, "RSVP list retrieved successfully.", rsvps);
+        } catch (error) {
+            console.error("Error caught in route:", error); // Log error in the catch block
+            handleRouteError(response, error, "Unable to retrieve RSVP list at this time, please try again later.", 500);
         }
+    })
+);
 
-        const result = await deleteRSVP({ _id: rsvpId, userId });
-
-        if (result.deletedCount === 0){
-            return response.status(400).json({
-                message: "Error deleting RSVP, please try again."
-            })
-        }
-
-        response.status(200).json({
-            message: "RSVP deleted successfully."
-        });
-
-    } catch (error) {
-        console.error("Error deleting RSVP: ", error);
-        response.status(500).json({
-            message: "Error deleting RSVP, please try again."
-        });
-    }
-});
-
-
-
-
-// Find list RSVPs depending on field yes/no/maybe
-router.get("/rsvplist/:eventId", async (request, response) => {
-    const { eventId } = request.params;
-    const { status } = request.query;
-
-    try {
-        const rsvps = await findRSVPsByResponse(eventId, response);
-        response.json({
-            message: `RSVP list for '${response}' retrieved successfully.`,
-            data: rsvps
-        });
-    } catch (error) {
-        response.status(500).json({ error: error.message });
-    }
-});
 
 
 

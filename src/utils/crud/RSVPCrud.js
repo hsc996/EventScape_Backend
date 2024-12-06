@@ -1,7 +1,9 @@
 const { RSVPModel } = require("../../models/RSVPModel.js");
 const { AppError } = require("../../middleware/routerMiddleware.js");
 
+
 // Post a yes/no/maybe RSVP on an event
+
 async function createRSVP(data){
     try {
         const result = await RSVPModel.create(data);
@@ -19,6 +21,7 @@ async function createRSVP(data){
 
 
 // Updating an RSVP response on an event
+
 async function updateRSVP(query, updatedData){
     try {
         const result = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
@@ -32,6 +35,7 @@ async function updateRSVP(query, updatedData){
 
 
 // Delete an RSVP response to an event
+
 async function deleteRSVP(query){
     try {
         const result = await RSVPModel.deleteOne(query);
@@ -45,37 +49,26 @@ async function deleteRSVP(query){
 
 
 // Find all list -- for yes/no/maybe
-async function findRSVPsByResponse(eventId, response){
+
+async function findRSVPsByResponse(query) {
+    console.log("Finding RSVPs with query:", query); // Add this log for debugging
     try {
-        const result = await RSVPModel.find({ eventId, response })
+        const result = await RSVPModel.find(query)
             .populate("eventId")
             .populate("userId");
+
+        console.log("RSVPs found:", result); // Log the result
         return result;
     } catch (error) {
-        console.error("Error retrieving RSVP list.");
-        throw new Error("Error retrieving RSVP list, please try again.")
+        console.error("Error retrieving RSVP list: ", error); // Detailed error logging
+        throw new Error("Error retrieving RSVP list, please try again.");
     }
 }
 
-
-async function findOneRSVP(query){
-    try {
-        console.log("Executing query in findOneRSVP:", query);
-        const result = await RSVPModel.findOne(query);
-        if (!result) {
-            console.error("No RSVP found for query:", query);
-        }
-        return result;
-    } catch (error) {
-        console.error("Database error in findOneRSVP:", error.message);
-        throw new Error("Error finding RSVP status, please try again.");
-    }
-}
 
 module.exports = {
     createRSVP,
     updateRSVP,
     deleteRSVP,
-    findRSVPsByResponse,
-    findOneRSVP
+    findRSVPsByResponse
 }

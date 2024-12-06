@@ -38,6 +38,16 @@ const EventSchema = new mongoose.Schema({
         ref: 'User',
         required: false
     }],
+    not_attending: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    }],
+    maybe_attending: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    }],
     theme: { 
         type: mongoose.Schema.Types.ObjectId,
         ref: "ThemeTemplate",

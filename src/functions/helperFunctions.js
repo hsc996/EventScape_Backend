@@ -1,17 +1,31 @@
 const bcrypt = require("bcrypt");
-const { AppError } = require("../middleware/routerMiddleware");
 const { RSVPModel } = require("../models/RSVPModel");
 
 const saltRounds = 10;
 
-// Helper functions
+//Helper Functions
 
-function sendError(response, statusCode = 500, message = "An error occurred", detailedMessage = null) {
-    console.error(message);
+class AppError extends Error {
+    constructor(message, statusCode = 500) {
+        super(message);
+        this.statusCode = statusCode;
+        this.isOperational = true;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
 
-    response.status(statusCode).json({
-        error: message,
-        message: detailedMessage || message
+
+function handleRouteError(response, error, defaultMessage = "An error occurred") {
+    console.error("Error: ", error.message || defaultMessage);
+
+    if (error instanceof AppError) {
+        return response.status(error.statusCode).json({
+            error: error.message,
+        });
+    }
+
+    return response.status(500).json({
+        error: defaultMessage,
     });
 }
 
@@ -46,7 +60,8 @@ async function checkRSVPExistence(eventId, userId){
 
 
 module.exports = {
-    sendError,
+    AppError,
+    handleRouteError,
     validateEmail,
     validatePassword,
     hashPassword,

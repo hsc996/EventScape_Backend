@@ -7,9 +7,9 @@ const {
     updateThemeSelection,
     removeThemeSelection
     } = require("../utils/crud/ThemeCrud.js");
-const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { sendError } = require("../functions/helperFunctions.js");
-const { handleRouteError, checkEventPermission } = require("../middleware/routerMiddleware.js");
+const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { checkEventPermission } = require("../middleware/routerMiddleware.js");
 
 const router = express.Router();
 
@@ -20,7 +20,9 @@ router.get(
     validateUserAuth,
     handleRoute(async (request, response) => {
         try {
+
             const result = await findAllTemplates();
+
             sendSuccessResponse(response, "All theme templates retreieved successfully", result);
         
         } catch (error) {
@@ -35,10 +37,12 @@ router.get(
     "/:themeId",
     validateUserAuth,
     handleRoute(async (request, response) => {
+
         const { themeId } = request.params;
 
         try {
             const result = await findTemplate(themeId);
+
             sendSuccessResponse(response, `Theme with ID ${themeId} retrieved successfully.`, result);
         
         } catch (error) {
@@ -94,6 +98,7 @@ router.patch(
         
         try {
             const result = await updateThemeSelection(eventId, themeId, userId);
+            
             sendSuccessResponse(response, `Theme with ID ${themeId} successfully applied.`);
         } catch (error) {
             handleRouteError(response, error, "Error updating theme selection, please try again later.");
@@ -119,6 +124,7 @@ router.delete(
 
         try {
             const result = await removeThemeSelection(eventId);
+            
             sendSuccessResponse(response, "Theme template removed from event successfully.", result);
         } catch (error) {
             handleRouteError(response, error, "Error removing theme from event, please try again later.");
