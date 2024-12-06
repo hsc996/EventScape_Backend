@@ -82,6 +82,7 @@ router.post(
 router.patch(
     "/update/:eventId",
     validateUserAuth,
+    checkEventPermission,
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
         const { themeId } = request.body;
@@ -108,6 +109,7 @@ router.patch(
 router.delete(
     "/delete/:eventId",
     validateUserAuth,
+    checkEventPermission,
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
 
