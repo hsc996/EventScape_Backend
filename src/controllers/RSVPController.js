@@ -8,9 +8,10 @@ const {
     findRSVPsByResponse
     } = require("../utils/crud/RSVPCrud.js");
 const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { checkRSVPExistence, handleRouteError, AppError } = require("../functions/helperFunctions.js");
+const { handleRouteError, AppError } = require("../functions/errorFunctions.js");
 const { checkRsvpPermission } = require("../middleware/routerMiddleware.js");
 const { updateEventAttendance } = require("../functions/updateEventAttendance.js");
+const { checkRSVPExistence } = require("../functions/helperFunctions.js");
 
 
 const router = express.Router();

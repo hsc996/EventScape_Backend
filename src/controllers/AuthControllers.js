@@ -2,12 +2,12 @@ const express = require("express");
 const { UserModel } = require("../models/UserModel.js");
 const { generateJWT } = require("../functions/jwtFunctions.js");
 const {
-    sendError,
     validateEmail,
     validatePassword,
     hashPassword,
     comparePassword
 } = require("../functions/helperFunctions.js");
+const { sendError, handleMongoError } = require("../functions/errorFunctions.js");
 
 const router = express.Router();
 
@@ -53,8 +53,7 @@ router.post("/signup", async (request, response) => {
         });
 
     } catch (error) {
-        console.error("Server Error: ", error);
-        sendError(response, 500, "Internal Server Error.");
+        handleMongoError(error, response);
     }
 });
 

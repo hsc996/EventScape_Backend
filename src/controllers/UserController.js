@@ -6,7 +6,7 @@ const { validatePassword, hashPassword } = require("../functions/helperFunctions
 const { UserModel } = require("../models/UserModel.js");
 const { validateUserAuth } = require('../middleware/validateUserAuth.js');
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { AppError, handleRouteError } = require("../functions/errorFunctions.js");
 
 const saltRounds = 10;
 

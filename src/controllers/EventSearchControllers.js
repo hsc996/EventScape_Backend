@@ -2,14 +2,14 @@ const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { AppError, handleRouteError } = require("../functions/errorFunctions.js");
 const { findPublicEvents, findPrivateEvents } = require("../utils/crud/EventSearchCrud.js");
 
 const router = express.Router();
 
 router.get("/public",
     validateUserAuth,
-    handleRoute(async (request, response) => {
+    async (request, response) => {
         try {
             const { query } = request.query;
 
@@ -19,14 +19,14 @@ router.get("/public",
 
             const result = await findPublicEvents(query);
             if (!result.length){
-                throw new AppError("No public events found matching your search.");
+                throw new AppError("No public events found matching your search.", 404);
             }
 
             sendSuccessResponse(response, "Event search completed successfully.", result);
         } catch (error) {
             handleRouteError(response, error, "Could not complete search at this time, please try again later.")
         }
-    })
+    }
 );
 
 
