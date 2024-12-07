@@ -5,6 +5,45 @@ const saltRounds = 10;
 
 //Helper Functions
 
+function sendError(response, statusCode, message) {
+    return response.status(statusCode).json({
+        success: false,
+        message: message
+    });
+}
+
+class AppError extends Error {
+    constructor(message, statusCode = 500) {
+        super(message);
+        this.statusCode = statusCode;
+        this.isOperational = true;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+
+function handleRouteError(response, error, defaultMessage = "An error occurred") {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (!isProduction) {
+        console.error("Error: ", error.message || defaultMessage);
+    } else {
+        console.error("Error: An error occurred in production, details not exposed.");
+    }
+
+    if (error instanceof AppError) {
+        return response.status(error.statusCode).json({
+            error: isProduction ? "An error occurred, please try again later." : error.message,
+        });
+    }
+
+    return response.status(500).json({
+        error: isProduction ? "An unexpected error occurred, please try again later." : defaultMessage,
+    });
+}
+
+
+
 function validateEmail(email){
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -35,6 +74,8 @@ async function checkRSVPExistence(eventId, userId){
 
 
 module.exports = {
+    AppError,
+    handleRouteError,
     validateEmail,
     validatePassword,
     hashPassword,

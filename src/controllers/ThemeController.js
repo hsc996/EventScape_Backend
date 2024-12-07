@@ -8,7 +8,7 @@ const {
     removeThemeSelection
     } = require("../utils/crud/ThemeCrud.js");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError, handleRouteError } = require("../functions/errorFunctions.js");
+const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
 const { checkEventPermission } = require("../middleware/routerMiddleware.js");
 
 const router = express.Router();

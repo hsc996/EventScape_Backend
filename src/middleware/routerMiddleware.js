@@ -1,8 +1,6 @@
 // Router middleware
 const { EventModel } = require("../models/EventModel.js");
 const { RSVPModel } = require("../models/RSVPModel.js");
-const { handleRouteError } = require("../functions/errorFunctions.js");
-const { AppError } = require("../functions/errorFunctions.js");
 
 function handleRoute(routeHandler){
     return async function (request, response, next){
@@ -10,12 +8,12 @@ function handleRoute(routeHandler){
             await routeHandler(request, response, next);
         } catch (error) {
             console.error("An error occurred: ", error);
-
-            if (error instanceof AppError) {
+            
+            if (error instanceof AppError){
                 return sendError(response, error.statusCode, error.message);
             }
 
-            return handleRouteError(response, statusCode, "An error occurred, please try again later.");
+            return sendError(response, statusCode, error.message);
         }
     }
 }
