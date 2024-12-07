@@ -1,0 +1,15 @@
+meta {
+  name: Private Event Search
+  type: http
+  seq: 27
+}
+
+get {
+  url: http://localhost:8080/search/public?query=dog%20wedding
+  body: none
+  auth: none
+}
+
+params:query {
+  query: dog wedding
+}

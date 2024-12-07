@@ -10,7 +10,6 @@ const {
 const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 const { checkRSVPExistence, handleRouteError, AppError } = require("../functions/helperFunctions.js");
 const { checkRsvpPermission } = require("../middleware/routerMiddleware.js");
-const { updateEventAttendance } = require("../functions/updateEventAttendance.js");
 
 
 const router = express.Router();
@@ -38,22 +37,10 @@ router.post(
             const existingRsvp = await checkRSVPExistence(eventId, userId);
 
             if (existingRsvp) {
-                const updatedData = { status };
-
-                const updatedRSVP = await updateRSVP({ eventId, userId }, updatedData);
-
-                await updateEventAttendance(eventId, userId, status);
-
+                const updatedRSVP = await updateRSVP({ eventId, userId }, { eventId, userId, status });
                 sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
             } else {
-                const rsvpData = {
-                    eventId,
-                    userId,
-                    status
-                };
-
-                const newRSVP = await createRSVP(rsvpData);
-
+                const newRSVP = await createRSVP({ eventId, userId, status });
                 sendSuccessResponse(response, `RSVP for event ${eventId} by user ${userId} was recorded successfully.`, newRSVP);
             }
 

@@ -18,6 +18,8 @@ router.get("/public",
             }
 
             const result = await findPublicEvents(query);
+            console.log("Search Result:", result);
+
             if (!result.length){
                 throw new AppError("No public events found matching your search.", 404);
             }
@@ -34,13 +36,14 @@ router.get("/private",
     validateUserAuth,
     handleRoute(async (request, response) => {
         try {
+            const { userId } = request.authUserData;
             const { query } = request.query;
 
             if (!query){
                 throw new AppError("Search query is required.", 400);
             }
 
-            const result = await findPrivateEvents(query);
+            const result = await findPrivateEvents(query, userId);
             if (!result.length){
                 throw new AppError("No private events found matching your search.");
             }

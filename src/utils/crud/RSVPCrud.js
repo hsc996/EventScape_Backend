@@ -1,13 +1,41 @@
 const { RSVPModel } = require("../../models/RSVPModel.js");
-const { AppError } = require("../../middleware/routerMiddleware.js");
+const { AppError } = require("../../functions/helperFunctions.js");
+const { EventModel } = require("../../models/EventModel.js");
 
 
 // Post a yes/no/maybe RSVP on an event
 
 async function createRSVP(data){
     try {
-        const result = await RSVPModel.create(data);
-        return result;
+        const { eventId, userId, status } = data;
+
+        if (!["yes", "maybe", "no"].includes(status)){
+            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
+        }
+
+        const newRSVP = await RSVPModel.create(data);
+
+        const event = await EventModel.findById(eventId);
+
+        if (!event){
+            throw new AppError("Event not found.", 404);
+        }
+
+        switch (status) {
+            case "yes":
+                event.attendees.push(userId);
+                break;
+            case "no":
+                event.attendees.push(userId);
+            case "maybe":
+                event.attendees.push(userId);
+            default:
+                throw new AppError("Invalid RSVP status.");
+        }
+
+        await event.save();
+
+        return newRSVP;
     } catch (error) {
         console.error("Error posting RSVP response: ", error);
 
@@ -24,12 +52,55 @@ async function createRSVP(data){
 
 async function updateRSVP(query, updatedData){
     try {
-        const result = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
+        const { eventId, userId, status } = updatedData;
 
-        return result;
+        if (!["yes", "maybe", "no"].includes(status)){
+            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
+        }
+
+        const rsvp = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
+
+        if (!rsvp){
+            throw new AppError("RSVP not found.", 404)
+        }
+
+        const event = await EventModel.findById(eventId);
+
+        if (!event){
+            throw new AppError("Event not found.", 404);
+        }
+
+        switch (status) {
+            case "yes":
+                event.attendees.push(userId);
+                event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
+                event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            case "no":
+                event.not_attending.push(userId);
+                event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
+                event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            case "maybe":
+                event.maybe_attending.push(userId);
+                event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
+                event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            default:
+                throw new AppError("Invalid RSVP status.", 400);
+        }
+
+        await event.save();
+
+        return rsvp;
     } catch (error) {
         console.error("Error updating RSVP response: ", error);
-        throw new Error("Error updating RSVP status, please try again.");
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error updating RSVP status, please try again.", 500);
     }
 }
 

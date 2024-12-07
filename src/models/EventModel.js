@@ -6,12 +6,14 @@ const EventSchema = new mongoose.Schema({
         required: true,
         minLength: 3,
         trim: true,
+        text: true
     },
     description: {
         type: String,
         required: true,
         minLength: 10,
-        trim: true
+        trim: true,
+        text: true
     },
     eventDate: {
         type: Date,
@@ -53,6 +55,10 @@ const EventSchema = new mongoose.Schema({
         ref: "ThemeTemplate",
         default: null
     },
+    isPublic: {
+        type: Boolean,
+        default: false
+    },
     isActive: {
         type: Boolean,
         default: true
@@ -62,6 +68,8 @@ const EventSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+EventSchema.index({ eventName: "text", description: "text" });
 
 const EventModel = mongoose.model("Event", EventSchema);
 

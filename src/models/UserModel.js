@@ -26,7 +26,15 @@ const UserSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    }
+    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 });
 
 const UserModel = mongoose.model("User", UserSchema);

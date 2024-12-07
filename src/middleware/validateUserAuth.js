@@ -4,7 +4,7 @@ const { decodeJWT } = require('../functions/jwtFunctions');
 // Middleware to authenticate user / ensure they are logged in
 
 async function validateUserAuth(request, response, next) {
-    const providedToken = request.headers.authorization.split(' ')[1];
+    const providedToken = request.headers.authorization && request.headers.authorization.split(' ')[1];
 
     if (!providedToken) {
         return response.status(403).json({

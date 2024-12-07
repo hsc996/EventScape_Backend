@@ -25,19 +25,25 @@ async function dropAndSeed(){
                 username: "Admin",
                 email: "admin@gmail.com",
                 password: "Password123!",
-                isAdmin: true
+                isAdmin: true,
+                followers: [],
+                following: []
             },
             {
                 username: "User2",
                 email: "usertwo@gmail.com",
                 password: "Password456!",
-                isAdmin: false
+                isAdmin: false,
+                followers: [],
+                following: []
             },
             {
                 username: "User3",
                 email: "userthree@gmail.com",
                 password: "Password789!",
-                isAdmin: false
+                isAdmin: false,
+                followers: [],
+                following: []
             }
         ];
 
@@ -46,7 +52,25 @@ async function dropAndSeed(){
         }
 
         const insertedUsers = await UserModel.insertMany(users);
-        console.log("Users seeded successfully.")
+        console.log("Users seeded successfully.");
+
+                const admin = insertedUsers[0];
+                const user2 = insertedUsers[1];
+                const user3 = insertedUsers[2];
+        
+                admin.following = [user2._id, user3._id];
+                user2.followers = [admin._id];
+        
+                user2.following = [user3._id];
+                user3.followers = [user2._id];
+        
+                user3.followers.push(admin._id);
+        
+                await admin.save();
+                await user2.save();
+                await user3.save();
+        
+                console.log("Followers and following relationships updated successfully.");
 
         const attendeeIds = insertedUsers.map(user => user._id);
 
@@ -58,6 +82,7 @@ async function dropAndSeed(){
                 location: "Hyde Park, Sydney CBD",
                 host: attendeeIds[0],
                 attendees: attendeeIds,
+                isPublic: true,
                 isActive: true
             },
             {
@@ -67,6 +92,7 @@ async function dropAndSeed(){
                 location: 'Sam\'s House, Los Angeles, CA',
                 host: attendeeIds[1],
                 attendees: attendeeIds,
+                isPublic: true,
                 isActive: true
             },
             {
@@ -76,6 +102,7 @@ async function dropAndSeed(){
                 location: 'Grandma\'s Backyard, Chicago, IL',
                 host: attendeeIds[2],
                 attendees: attendeeIds,
+                isPublic: false,
                 isActive: true
             }
         ];

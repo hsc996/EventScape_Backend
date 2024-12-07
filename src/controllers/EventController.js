@@ -11,6 +11,7 @@ const {
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
 const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { UserModel } = require("../models/UserModel.js");
 
 const router = express.Router();
 
@@ -149,7 +150,8 @@ router.patch(
 
 
 
-// Delete
+// Delete Event
+
 router.delete(
     "/delete/:eventId",
     validateUserAuth,
@@ -169,5 +171,43 @@ router.delete(
     })
 );
 
+
+// Invite Followers to Event
+
+router.post(
+    "/invite/:eventId",
+    validateUserAuth,
+    checkEventPermission,
+    handleRoute(async (request, response) => {
+        const { eventId } = request.params;
+        const { userId } = request.authUserData;
+
+        const event = await findOneEvent({ _id: eventId });
+        if (!event){
+            throw new AppError("Event not found.", 404);
+        }
+
+        if (event.host.toString() !== userId){
+            throw new AppError("You are not authorised to invite other users to this event.", 403);
+        }
+
+        const host = await UserModel.findById(userId).select("followers");
+        if (!host || !host.followers.length){
+            throw new AppError("You have no followers to invite.", 404);
+        }
+
+        const uniqueInvite = Array.from(
+            new Set([...event.invited.map((id) => id.toString()), ...host.followers.map((id) => id.toString())])
+        );
+
+        event.invited = uniqueInvited;
+        await event.save();
+
+        sendSuccessResponse(response, `Followers invited successfully.`, {
+            eventId: event._id,
+            invited: event.invited
+        });
+    })
+);
 
 module.exports = router;

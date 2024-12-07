@@ -74,6 +74,7 @@ async function checkRSVPExistence(eventId, userId){
 
 
 module.exports = {
+    sendError,
     AppError,
     handleRouteError,
     validateEmail,
