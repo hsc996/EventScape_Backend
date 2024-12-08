@@ -10,8 +10,9 @@ const {
     findPrivateEvent
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
-const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { AppError, sendError } = require("../functions/helperFunctions.js");
 const { UserModel } = require("../models/UserModel.js");
+const { FollowerModel } = require("../models/FollowerModel");
 
 const router = express.Router();
 
@@ -181,6 +182,7 @@ router.post(
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
         const { userId } = request.authUserData;
+        const { invitedUserIds } = request.body;
 
         const event = await findOneEvent({ _id: eventId });
         if (!event){
@@ -191,19 +193,29 @@ router.post(
             throw new AppError("You are not authorised to invite other users to this event.", 403);
         }
 
-        const host = await UserModel.findById(userId).select("followers");
-        if (!host || !host.followers.length){
+        const hostFollowers = await FollowerModel.find({ followingId: userId }).select("followerId");
+
+        if (!hostFollowers || hostFollowers.length === 0) {
             throw new AppError("You have no followers to invite.", 404);
         }
 
+        const followerIds = hostFollowers.map(follower => follower.followerId.toString());
+        console.log("Host followers:", followerIds);
+
+        const validInvitedUserIds = invitedUserIds.filter(id => followerIds.includes(id.toString()));
+
+        if (validInvitedUserIds.length === 0) {
+            throw new AppError("None of the selected users are in your followers list.", 400);
+        }
+
         const uniqueInvite = Array.from(
-            new Set([...event.invited.map((id) => id.toString()), ...host.followers.map((id) => id.toString())])
+            new Set([...event.invited.map(id => id.toString()), ...validInvitedUserIds])
         );
 
-        event.invited = uniqueInvited;
+        event.invited = uniqueInvite;
         await event.save();
 
-        sendSuccessResponse(response, `Followers invited successfully.`, {
+        sendSuccessResponse(response, "Followers invited successfully.", {
             eventId: event._id,
             invited: event.invited
         });

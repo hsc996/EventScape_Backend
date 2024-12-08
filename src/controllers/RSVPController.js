@@ -94,13 +94,12 @@ router.get(
                 throw new AppError("Event ID is required.", 400);
             }
 
-            // Prepare the query object
             const query = { eventId };
             if (status) {
-                query.response = status;  // Ensure 'status' is passed as 'response'
+                query.response = status;
             }
 
-            console.log("Query to find RSVPs:", query); // Log the query to debug
+            console.log("Query to find RSVPs:", query);
 
             const rsvps = await findRSVPsByResponse(query);
             if (!rsvps || rsvps.length === 0) {
@@ -109,7 +108,7 @@ router.get(
 
             sendSuccessResponse(response, "RSVP list retrieved successfully.", rsvps);
         } catch (error) {
-            console.error("Error caught in route:", error); // Log error in the catch block
+            console.error("Error caught in route:", error);
             handleRouteError(response, error, "Unable to retrieve RSVP list at this time, please try again later.", 500);
         }
     })

@@ -21,6 +21,10 @@ async function createRSVP(data){
             throw new AppError("Event not found.", 404);
         }
 
+        if (!event.invited.includes(userId)){
+            throw new AppError("User is not invited to this event.", 403);
+        }
+
         switch (status) {
             case "yes":
                 event.attendees.push(userId);

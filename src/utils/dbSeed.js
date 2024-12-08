@@ -72,7 +72,7 @@ async function dropAndSeed(){
         
                 console.log("Followers and following relationships updated successfully.");
 
-        const attendeeIds = insertedUsers.map(user => user._id);
+        const invitedIds = insertedUsers.map(user => user._id);
 
         const events = [
             {
@@ -80,8 +80,8 @@ async function dropAndSeed(){
                 description: "Please join us to celebrate the long-awaited union of Fluffy and Rocket.",
                 eventDate: new Date('2024-12-05T15:00:00Z'),
                 location: "Hyde Park, Sydney CBD",
-                host: attendeeIds[0],
-                attendees: attendeeIds,
+                host: invitedIds[0],
+                invited: invitedIds,
                 isPublic: true,
                 isActive: true
             },
@@ -90,8 +90,8 @@ async function dropAndSeed(){
                 description: "Come celebrate Sam's milestone birthday! There will be cake, drinks, and lots of fun. Don't miss it!",
                 eventDate: new Date('2024-12-18T19:00:00Z'),
                 location: 'Sam\'s House, Los Angeles, CA',
-                host: attendeeIds[1],
-                attendees: attendeeIds,
+                host: invitedIds[1],
+                invited: invitedIds,
                 isPublic: true,
                 isActive: true
             },
@@ -100,8 +100,8 @@ async function dropAndSeed(){
                 description: 'Join us for a casual family BBQ with lots of food, drinks, and games. Bring your loved ones and enjoy!',
                 eventDate: new Date('2024-12-25T12:00:00Z'),
                 location: 'Grandma\'s Backyard, Chicago, IL',
-                host: attendeeIds[2],
-                attendees: attendeeIds,
+                host: invitedIds[2],
+                invited: invitedIds,
                 isPublic: false,
                 isActive: true
             }
