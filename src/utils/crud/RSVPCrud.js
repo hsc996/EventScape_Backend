@@ -1,6 +1,6 @@
 const { RSVPModel } = require("../../models/RSVPModel.js");
-const { AppError } = require("../../functions/helperFunctions.js");
 const { EventModel } = require("../../models/EventModel.js");
+const { AppError } = require("../../functions/helperFunctions.js");
 
 
 // Post a yes/no/maybe RSVP on an event
@@ -47,7 +47,7 @@ async function createRSVP(data){
             throw error;
         }
 
-        throw new AppError("Error posting RSVP response, please try again.", 500);
+        throw new AppError("Error posting RSVP response, please try again later.", 500);
     }
 }
 
@@ -104,7 +104,7 @@ async function updateRSVP(query, updatedData){
             throw error;
         }
 
-        throw new AppError("Error updating RSVP status, please try again.", 500);
+        throw new AppError("Error updating RSVP status, please try again later.", 500);
     }
 }
 
@@ -118,7 +118,12 @@ async function deleteRSVP(query){
         return result;
     } catch (error) {
         console.error("Error deleting RSVP status: ", error);
-        throw new Error("Error deleting RSVP status, please try again.");
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error deleting RSVP status, please try again later.", 500);
     }
 }
 
@@ -126,17 +131,22 @@ async function deleteRSVP(query){
 // Find all list -- for yes/no/maybe
 
 async function findRSVPsByResponse(query) {
-    console.log("Finding RSVPs with query:", query); // Add this log for debugging
+    console.log("Finding RSVPs with query:", query);
     try {
         const result = await RSVPModel.find(query)
             .populate("eventId")
             .populate("userId");
 
-        console.log("RSVPs found:", result); // Log the result
+        console.log("RSVPs found:", result);
         return result;
     } catch (error) {
-        console.error("Error retrieving RSVP list: ", error); // Detailed error logging
-        throw new Error("Error retrieving RSVP list, please try again.");
+        console.error("Error retrieving RSVP list: ", error);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error retrieving RSVP list, please try again later.", 500);
     }
 }
 

@@ -8,8 +8,6 @@ const { validateUserAuth } = require('../middleware/validateUserAuth.js');
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
 
-const saltRounds = 10;
-
 const router = express.Router();
 
 

@@ -16,10 +16,13 @@ async function createUser(username, email, password, isAdmin){
         return result;
 
     } catch (error) {
-
         console.error("Error creating profile: ", error);
-        throw new Error("Error creating profile, please try again.");
 
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error creating profile, please try again later.", 500);
     }
 }
 
@@ -32,9 +35,13 @@ async function findOneUser(query){
 
         return result;
    } catch (error) {
-    
         console.error("Error finding profile: ", error);
-        throw new Error("Error finding profile, please try again.")
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error finding profile, please try again later.", 500);
    }
 }
 
@@ -48,7 +55,12 @@ async function findManyUsers(query){
         return result;
     } catch (error) {
         console.error("Error finding profile list: ", error);
-        throw new Error("Error finding profile list, please try again.")
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error finding profile list, please try again later.", 500);
     }
 }
 
@@ -62,7 +74,12 @@ async function updateOneUser(query, updateData){
         return result
     } catch (error) {
         console.error("Error updating profile: ", error);
-        throw new Error("Error updating profile, please try again.")
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error updating profile, please try again later.", 500);
     }
 }
 
@@ -75,8 +92,13 @@ async function deleteOneUser(query){
 
         return result;
     } catch (error) {
-        console.error("Error deleting profile", error);
-        throw new Error("Error deleting profile, please try again.")
+        console.error("Error deleting profile: ", error);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error deleting profile, please try again later.", 500);
     }
 }
 

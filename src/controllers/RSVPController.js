@@ -8,7 +8,7 @@ const {
     findRSVPsByResponse
     } = require("../utils/crud/RSVPCrud.js");
 const { handleRoute,sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { checkRSVPExistence, handleRouteError, AppError } = require("../functions/helperFunctions.js");
+const { checkRSVPExistence, AppError } = require("../functions/helperFunctions.js");
 const { checkRsvpPermission } = require("../middleware/routerMiddleware.js");
 
 
@@ -33,19 +33,14 @@ router.post(
             throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
         }
 
-        try {
-            const existingRsvp = await checkRSVPExistence(eventId, userId);
+        const existingRsvp = await checkRSVPExistence(eventId, userId);
 
-            if (existingRsvp) {
-                const updatedRSVP = await updateRSVP({ eventId, userId }, { eventId, userId, status });
-                sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
-            } else {
-                const newRSVP = await createRSVP({ eventId, userId, status });
-                sendSuccessResponse(response, `RSVP for event ${eventId} by user ${userId} was recorded successfully.`, newRSVP);
-            }
-
-        } catch (error) {
-            handleRouteError(response, error, "Error handling RSVP response, please try again later.");
+        if (existingRsvp) {
+            const updatedRSVP = await updateRSVP({ eventId, userId }, { eventId, userId, status });
+            sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
+        } else {
+            const newRSVP = await createRSVP({ eventId, userId, status });
+            sendSuccessResponse(response, `RSVP for event ${eventId} by user ${userId} was recorded successfully.`, newRSVP);
         }
     })
 );
@@ -59,23 +54,17 @@ router.delete(
     handleRoute(async (request, response) => {
         const { rsvpId } = request.params;
 
-
-        try {
-            if (!rsvpId){
-                throw new AppError("RSVP ID is required.", 400);
-            }
-
-            const result = await deleteRSVP({ _id: rsvpId });
-
-            if (result.deletedCount === 0){
-                throw new AppError("Error removing RSVP, please try again.", 400);
-            }
-
-            sendSuccessResponse(response, "RSVP removed successfully.");
-
-        } catch (error) {
-            handleRouteError(response, error, "Error removing RSVP, please try again.");
+        if (!rsvpId){
+            throw new AppError("RSVP ID is required.", 400);
         }
+
+        const result = await deleteRSVP({ _id: rsvpId });
+
+        if (result.deletedCount === 0){
+            throw new AppError("Error removing RSVP, please try again.", 400);
+        }
+
+        sendSuccessResponse(response, "RSVP removed successfully.");
     })
 );
 
@@ -89,28 +78,23 @@ router.get(
         const { eventId } = request.params;
         const { status } = request.query;
 
-        try {
-            if (!eventId) {
-                throw new AppError("Event ID is required.", 400);
-            }
-
-            const query = { eventId };
-            if (status) {
-                query.response = status;
-            }
-
-            console.log("Query to find RSVPs:", query);
-
-            const rsvps = await findRSVPsByResponse(query);
-            if (!rsvps || rsvps.length === 0) {
-                throw new AppError("No RSVPs found for the given event.", 404);
-            }
-
-            sendSuccessResponse(response, "RSVP list retrieved successfully.", rsvps);
-        } catch (error) {
-            console.error("Error caught in route:", error);
-            handleRouteError(response, error, "Unable to retrieve RSVP list at this time, please try again later.", 500);
+        if (!eventId) {
+            throw new AppError("Event ID is required.", 400);
         }
+
+        const query = { eventId };
+        if (status) {
+            query.response = status;
+        }
+
+        console.log("Query to find RSVPs:", query);
+
+        const rsvps = await findRSVPsByResponse(query);
+        if (!rsvps || rsvps.length === 0) {
+            throw new AppError("No RSVPs found for the given event.", 404);
+        }
+
+        sendSuccessResponse(response, "RSVP list retrieved successfully.", rsvps);
     })
 );
 

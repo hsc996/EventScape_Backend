@@ -1,4 +1,5 @@
 const { FollowerModel } = require("../../models/FollowerModel.js");
+const { AppError } = require("../../functions/helperFunctions.js");
 
 // Find a follower
 async function findOneFollower(query){
@@ -6,10 +7,16 @@ async function findOneFollower(query){
         const follow = await FollowerModel.findOne({ followerId: query.followerId })
             .populate("followerId")
             .populate("followingId");
+
         return follow;
     } catch (error) {
-        console.error("Error finding follow relationship: ", error);
-        throw new Error("Error finding follow relationship, please try again.");
+        console.error("Error finding follow relationship: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error finding follow relationship, please try again later.", 500);
     }
 }
 
@@ -20,10 +27,16 @@ async function getFollowers(query){
     try {
         const followers = await FollowerModel.find({ followingId: query })
             .populate("followerId");
+
         return followers;
     } catch (error) {
-        console.error("Error retrieving followers list: ", error);
-        throw new Error("Error retrieving followers list, please try again.");
+        console.error("Error retrieving followers list: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error retrieving followers list, please try again later.", 500);
     }
 }
 
@@ -33,10 +46,16 @@ async function getFollowing(query){
     try {
         const following = await FollowerModel.find({ followerId: query })
             .populate("followingId");
+
         return following;
     } catch (error) {
-        console.error("Error retrieving following list: ", error);
-        throw new Error("Error retrieving following list, please try again.");
+        console.error("Error retrieving following list: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error retrieving following list, please try again later.", 500);
     }
 }
 
@@ -49,8 +68,13 @@ async function followUser(query){
 
         return savedFollow;
     } catch (error) {
-        console.error("Error following user.");
-        throw new Error("Error following user, please try again.");
+        console.error("Error following user: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error following user, please try again later.", 500);
     }
 }
 
@@ -62,8 +86,13 @@ async function unfollowUser(query){
 
         return unfollow;
     } catch (error) {
-        console.error("Error unfollowing user: ", error);
-        throw new Error("Error unfollowing user, please try again.");
+        console.error("Error unfollowing user: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error unfollowing user, please try again later.", 500);
     }
 }
 
@@ -78,8 +107,13 @@ async function isAlreadyFollowing(followerId, followingId){
 
         return !!existingFollow;
     } catch (error) {
-        console.error("Error checking follow status: ", error);
-        throw new Error("Error checking follow status, please try again.");
+        console.error("Error checking follow status: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error checking follow status, please try again later.", 500);
     }
 }
 
