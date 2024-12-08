@@ -16,7 +16,7 @@ const router = express.Router();
 // View Profile
 
 router.get(
-    "/search/:userId",
+    "/view/:userId",
     handleRoute(async (request, response) => {
         try {
             const { userId } = request.params;

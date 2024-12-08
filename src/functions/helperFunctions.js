@@ -28,12 +28,12 @@ function handleRouteError(response, error, defaultMessage = "An error occurred")
     if (!isProduction) {
         console.error("Error: ", error.message || defaultMessage);
     } else {
-        console.error("Error: An error occurred in production, details not exposed.");
+        console.error("Error: ", error.isOperational ? error.message : "An unexpected error occurred.");
     }
 
-    if (error instanceof AppError) {
+    if (error instanceof AppError && error.isOperational) {
         return response.status(error.statusCode).json({
-            error: isProduction ? "An error occurred, please try again later." : error.message,
+            error: error.message,
         });
     }
 
@@ -41,6 +41,7 @@ function handleRouteError(response, error, defaultMessage = "An error occurred")
         error: isProduction ? "An unexpected error occurred, please try again later." : defaultMessage,
     });
 }
+
 
 
 
