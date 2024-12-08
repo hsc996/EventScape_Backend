@@ -1,16 +1,26 @@
 const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
-const { followUser, unfollowUser, getFollowers, getFollowing, findOneFollower } = require("../utils/crud/FollowerCrud");
+const {
+    followUser,
+    unfollowUser,
+    getFollowers,
+    getFollowing,
+    findOneFollower,
+    isAlreadyFollowing
+} = require("../utils/crud/FollowerCrud");
+const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+const { AppError } = require("../functions/helperFunctions.js");
 
 const router = express.Router();
 
 
 // See all followers for a single user
-router.get("/:userId/followers", async (request, response) => {
-    const { userId } = request.params;
+router.get(
+    "/:userId/followers",
+    handleRoute(async (request, response) => {
+        const { userId } = request.params;
 
-    try {
         const followers = await getFollowers(userId);
 
         if (!followers.length){
@@ -19,26 +29,19 @@ router.get("/:userId/followers", async (request, response) => {
             });
         }
 
-        response.status(200).json({
-            message: "Followers retrieved successfully.",
-            data: followers
-        });
-    } catch (error) {
-        console.error("Error retrieving followers: ", error);
-        return response.status(500).json({
-            message: "An error occurred while retrieving followers. Please try again."
-        });
-    }
-});
+        sendSuccessResponse(response, "Followers retrieved successfully.", followers);
+    })
+);
 
 
 
 
 // See all following for a single user
-router.get("/:userId/following", async (request, response) => {
-    const { userId } = request.params;
+router.get(
+    "/:userId/following",
+    handleRoute(async (request, response) => {
+        const { userId } = request.params;
 
-    try {
         const following = await getFollowing(userId);
 
         if (!following.length){
@@ -47,22 +50,20 @@ router.get("/:userId/following", async (request, response) => {
             });
         }
 
-        response.status(200).json({
-            message: "Following list retrieved successfully.",
-            data: following
-        });
-    } catch (error) {
-        
-    }
-});
+        sendSuccessResponse(response, "Following list retrieved successfully.", following);
+    })
+);
+
 
 
 // Follow Account
-router.post("/:userId", validateUserAuth, async (request, response) => {
-    const { userId: followingId } = request.params;
-    const { userId: followerId } = request.authUserData;
+router.post(
+    "/:userId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        const { userId: followingId } = request.params;
+        const { userId: followerId } = request.authUserData;
     
-    try {
         if (!followingId){
             return response.status(404).json({
                 message: `User with ID ${followingId} not found.`
@@ -75,29 +76,31 @@ router.post("/:userId", validateUserAuth, async (request, response) => {
             })
         }
 
-        const newFollow = await followUser({ followerId, followingId });
-        return response.status(200).json({
-            message: "Followed successfully.",
-            data: newFollow
-        });
+        const alreadyFollowing = await isAlreadyFollowing({ followerId, followingId });
+        if (alreadyFollowing){
+            return response.status(400).json({
+                message: "You are already following this user."
+            })
+        }
 
-    } catch (error) {
-        console.error("Error following user: ", error);
-        return response.status(500).json({
-            message: "An error occurred while trying to follow the user."
-        });
-    }
-});
+        const newFollow = await followUser({ followerId, followingId });
+
+        sendSuccessResponse(response, "Followed successfully.", newFollow);
+    })
+);
+
 
 
 
 
 // Unfollow Account
-router.delete("/unfollow/:userId", validateUserAuth, async (request, response) => {
-    const { userId: followingId } = request.params;
-    const { userId: followerId } = request.authUserData;
+router.delete(
+    "/unfollow/:userId",
+    validateUserAuth,
+    handleRoute(async (request, response) => {
+        const { userId: followingId } = request.params;
+        const { userId: followerId } = request.authUserData;
     
-    try {
         if (!followingId){
             return response.status(404).json({
                 message: `User with ID ${followingId} not found.`
@@ -118,17 +121,11 @@ router.delete("/unfollow/:userId", validateUserAuth, async (request, response) =
         }
 
         const unfollow = await unfollowUser({ followerId, followingId });
-        return response.status(200).json({
-            message: "User unfollowed successfully."
-        });
+        
+        sendSuccessResponse(response, "User unfollowed successfully.", unfollow);
+    })
+);
 
-    } catch (error) {
-        console.error("Error following user: ", error);
-        return response.status(500).json({
-            message: "An error occurred while trying to follow the user."
-        });
-    }
-});
 
 
 module.exports = router;

@@ -12,6 +12,7 @@ function sendError(response, statusCode, message) {
     });
 }
 
+
 class AppError extends Error {
     constructor(message, statusCode = 500) {
         super(message);
@@ -43,25 +44,27 @@ function handleRouteError(response, error, defaultMessage = "An error occurred")
 }
 
 
-
-
 function validateEmail(email){
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
+
 
 function validatePassword(password){
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     return passwordRegex.test(password);
 }
 
+
 async function hashPassword(password){
     return await bcrypt.hash(password, saltRounds);
 }
 
+
 async function comparePassword(providedPassword, storedPassword){
     return await bcrypt.compare(providedPassword, storedPassword);
 }
+
 
 async function checkRSVPExistence(eventId, userId){
     try {

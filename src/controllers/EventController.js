@@ -10,7 +10,7 @@ const {
     findPrivateEvent
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
-const { AppError, sendError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/helperFunctions.js");
 const { FollowerModel } = require("../models/FollowerModel");
 
 const router = express.Router();

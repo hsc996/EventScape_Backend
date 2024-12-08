@@ -67,10 +67,27 @@ async function unfollowUser(query){
     }
 }
 
+// Checks if user is alreasdy following
+
+async function isAlreadyFollowing(followerId, followingId){
+    try {
+        const existingFollow = await FollowerModel.findOne({
+            follower: followerId,
+            following: followingId
+        });
+
+        return !!existingFollow;
+    } catch (error) {
+        console.error("Error checking follow status: ", error);
+        throw new Error("Error checking follow status, please try again.");
+    }
+}
+
 module.exports = {
     findOneFollower,
     getFollowers,
     getFollowing,
     followUser,
-    unfollowUser
+    unfollowUser,
+    isAlreadyFollowing
 }
