@@ -1,5 +1,5 @@
 const { EventModel } = require("../../models/EventModel.js");
-const { AppError } = require("../../middleware/routerMiddleware.js");
+const { AppError } = require("../../functions/helperFunctions.js");
 
 
 

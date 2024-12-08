@@ -11,7 +11,6 @@ const {
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
 const { AppError, sendError } = require("../functions/helperFunctions.js");
-const { UserModel } = require("../models/UserModel.js");
 const { FollowerModel } = require("../models/FollowerModel");
 
 const router = express.Router();
