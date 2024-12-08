@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 
 const { ThemeTemplateModel } = require("../../models/ThemeModel.js");
 const { EventModel } = require("../../models/EventModel.js");
-const { AppError } = require("../../middleware/routerMiddleware.js");
+const { AppError } = require("../../functions/helperFunctions.js");
 
 // Find all theme templates
 async function findAllTemplates(){

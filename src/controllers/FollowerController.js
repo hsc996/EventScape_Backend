@@ -24,9 +24,7 @@ router.get(
         const followers = await getFollowers(userId);
 
         if (!followers.length){
-            return response.status(404).json({
-                message: "This user has no followers."
-            });
+            throw new AppError("This user has no followers.", 404);
         }
 
         sendSuccessResponse(response, "Followers retrieved successfully.", followers);
@@ -45,9 +43,7 @@ router.get(
         const following = await getFollowing(userId);
 
         if (!following.length){
-            return response.status(404).json({
-                message: "This user is not following anyone."
-            });
+            throw new AppError("This user is not following anyone.", 404);
         }
 
         sendSuccessResponse(response, "Following list retrieved successfully.", following);
@@ -65,22 +61,16 @@ router.post(
         const { userId: followerId } = request.authUserData;
     
         if (!followingId){
-            return response.status(404).json({
-                message: `User with ID ${followingId} not found.`
-            })
+            throw new AppError(`User with ID ${followingId} not found.`, 404);
         }
 
         if (followingId === followerId){
-            return response.status(400).json({
-                message: "You cannot follow yourself."
-            })
+            throw new AppError("You cannot follow yourself.", 400);
         }
 
         const alreadyFollowing = await isAlreadyFollowing({ followerId, followingId });
         if (alreadyFollowing){
-            return response.status(400).json({
-                message: "You are already following this user."
-            })
+            throw new AppError("You are already following this user.", 400);
         }
 
         const newFollow = await followUser({ followerId, followingId });
@@ -102,22 +92,16 @@ router.delete(
         const { userId: followerId } = request.authUserData;
     
         if (!followingId){
-            return response.status(404).json({
-                message: `User with ID ${followingId} not found.`
-            })
+            throw new AppError(`User with ID ${followingId} not found.`, 404);
         }
 
         if (followingId === followerId){
-            return response.status(400).json({
-                message: "You cannot unfollow yourself."
-            })
+            throw new AppError("You cannot unfollow yourself.", 400);
         }
 
         const existingFollow = await findOneFollower({ followerId, followingId });
         if (!existingFollow){
-            return response.status(400).json({
-                message: "You are not following this user."
-            });
+            throw new AppError("You are not following this user.", 400);
         }
 
         const unfollow = await unfollowUser({ followerId, followingId });

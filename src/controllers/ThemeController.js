@@ -8,7 +8,7 @@ const {
     removeThemeSelection
     } = require("../utils/crud/ThemeCrud.js");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError, handleRouteError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/helperFunctions.js");
 const { checkEventPermission } = require("../middleware/routerMiddleware.js");
 
 const router = express.Router();
@@ -19,15 +19,9 @@ router.get(
     "/",
     validateUserAuth,
     handleRoute(async (request, response) => {
-        try {
+        const result = await findAllTemplates();
 
-            const result = await findAllTemplates();
-
-            sendSuccessResponse(response, "All theme templates retreieved successfully", result);
-        
-        } catch (error) {
-            handleRouteError(response, error, "Error retrieving theme templates, please try again later.");
-        }
+        sendSuccessResponse(response, "All theme templates retreieved successfully", result);
     })
 );
 
@@ -37,17 +31,11 @@ router.get(
     "/:themeId",
     validateUserAuth,
     handleRoute(async (request, response) => {
-
         const { themeId } = request.params;
 
-        try {
-            const result = await findTemplate(themeId);
+        const result = await findTemplate(themeId);
 
-            sendSuccessResponse(response, `Theme with ID ${themeId} retrieved successfully.`, result);
-        
-        } catch (error) {
-            handleRouteError(response, error, "Error retrieving theme, please try again later.");
-        }
+        sendSuccessResponse(response, `Theme with ID ${themeId} retrieved successfully.`, result);
     })
 );
 
@@ -68,14 +56,9 @@ router.post(
             throw new AppError("Theme ID is required in the request body.", 400);
         }
 
-        try {
-            const result = await updateThemeSelection(eventId, themeId, userId);
+        const result = await updateThemeSelection(eventId, themeId, userId);
 
-            sendSuccessResponse(response, `Theme with ID ${themeId} applied successfully to event with ID ${eventId}`, result);
-       
-        } catch (error) {
-            handleRouteError(response, error, "Error applying theme to event page, please try again later.");
-        }
+        sendSuccessResponse(response, `Theme with ID ${themeId} applied successfully to event with ID ${eventId}`, result);
     })
 );
 
@@ -96,13 +79,9 @@ router.patch(
             return sendError(response, 400, "Theme ID is required in the request body.");
         }
         
-        try {
-            const result = await updateThemeSelection(eventId, themeId, userId);
-            
-            sendSuccessResponse(response, `Theme with ID ${themeId} successfully applied.`);
-        } catch (error) {
-            handleRouteError(response, error, "Error updating theme selection, please try again later.");
-        }
+        const result = await updateThemeSelection(eventId, themeId, userId);
+        
+        sendSuccessResponse(response, `Theme with ID ${themeId} successfully applied.`);
     })
 );
 
@@ -122,13 +101,9 @@ router.delete(
             return sendError(response, 400, "Event ID is required.");
         }
 
-        try {
-            const result = await removeThemeSelection(eventId);
-            
-            sendSuccessResponse(response, "Theme template removed from event successfully.", result);
-        } catch (error) {
-            handleRouteError(response, error, "Error removing theme from event, please try again later.");
-        }
+        const result = await removeThemeSelection(eventId);
+        
+        sendSuccessResponse(response, "Theme template removed from event successfully.", result);
     })
 );
 
