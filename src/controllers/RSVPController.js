@@ -15,7 +15,7 @@ const { checkRsvpPermission } = require("../middleware/routerMiddleware.js");
 const router = express.Router();
 
 
-// RSVP YES/NO/MAYBE
+// RSVP To Event - YES/NO/MAYBE
 
 router.post(
     "/attending/:eventId",

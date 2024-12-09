@@ -9,3 +9,4 @@ app.listen(PORT, async () => {
     await dbConnect();
     console.log("Server is running on port http://localhost:" + PORT);
 });
+

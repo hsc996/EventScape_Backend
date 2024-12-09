@@ -23,25 +23,25 @@ class AppError extends Error {
 }
 
 
-function handleRouteError(response, error, defaultMessage = "An error occurred") {
-    const isProduction = process.env.NODE_ENV === 'production';
+// function handleRouteError(response, error, defaultMessage = "An error occurred") {
+//     const isProduction = process.env.NODE_ENV === 'production';
 
-    if (!isProduction) {
-        console.error("Error: ", error.message || defaultMessage);
-    } else {
-        console.error("Error: ", error.isOperational ? error.message : "An unexpected error occurred.");
-    }
+//     if (!isProduction) {
+//         console.error("Error: ", error.message || defaultMessage);
+//     } else {
+//         console.error("Error: ", error.isOperational ? error.message : "An unexpected error occurred.");
+//     }
 
-    if (error instanceof AppError && error.isOperational) {
-        return response.status(error.statusCode).json({
-            error: error.message,
-        });
-    }
+//     if (error instanceof AppError && error.isOperational) {
+//         return response.status(error.statusCode).json({
+//             error: error.message,
+//         });
+//     }
 
-    return response.status(500).json({
-        error: isProduction ? "An unexpected error occurred, please try again later." : defaultMessage,
-    });
-}
+//     return response.status(500).json({
+//         error: isProduction ? "An unexpected error occurred, please try again later." : defaultMessage,
+//     });
+// }
 
 
 function validateEmail(email){
@@ -80,7 +80,6 @@ async function checkRSVPExistence(eventId, userId){
 module.exports = {
     sendError,
     AppError,
-    handleRouteError,
     validateEmail,
     validatePassword,
     hashPassword,

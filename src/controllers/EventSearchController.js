@@ -7,6 +7,8 @@ const { findPublicEvents, findPrivateEvents } = require("../utils/crud/EventSear
 
 const router = express.Router();
 
+// Search for public events
+
 router.get("/public",
     validateUserAuth,
     async (request, response) => {
@@ -27,6 +29,8 @@ router.get("/public",
     }
 );
 
+
+// Search for private events
 
 router.get("/private",
     validateUserAuth,

@@ -16,7 +16,7 @@ const router = express.Router();
 
 // Get all theme templates (available for users to choose from)
 router.get(
-    "/",
+    "/find",
     validateUserAuth,
     handleRoute(async (request, response) => {
         const result = await findAllTemplates();
