@@ -21,7 +21,6 @@ describe("Testing the root API route", () => {
 });
 
 describe("Testing cors validation", () => {
-
     // Test for the homepage route
     test("GET / should have correct CORS headers for valid origin", async () => {
         const response = await request(app)
