@@ -8,6 +8,8 @@ const {
     hashPassword,
     comparePassword
 } = require("../functions/helperFunctions.js");
+const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+const { AppError } = require("../functions/helperFunctions.js");
 
 const router = express.Router();
 
@@ -16,24 +18,47 @@ const saltRounds = 10;
 
 // Register new account route
 
-router.post("/signup", async (request, response) => {
-    try {
+router.post(
+    "/signup",
+    handleRoute(async (request, response) => {
         const { username, password, email } = request.body;
-    
-        if (!username || !password || !email){
-            return sendError(response, 400, "Incorrect or missing sign-up credentials provided.");
+
+        // Check for missing fields
+        if (!username || !password || !email) {
+            throw new AppError("Incorrect or missing sign-up credentials provided.", 400);
         }
 
-        if (!validateEmail(email)){
-            return sendError(response, 400, "Invalid email format.");
+        // Validate email format
+        if (!validateEmail(email)) {
+            throw new AppError("Invalid email format.", 400);
         }
 
-        if (!validatePassword(password)){
-            return sendError(response, 400, "Password must be at least 8 characters and include at least one letter, one number, and one special character.");
+        // Validate password strength
+        if (!validatePassword(password)) {
+            throw new AppError(
+                "Password must be at least 8 characters and include at least one letter, one number, and one special character.",
+                400
+            );
         }
 
+        // Check if email or username already exists
+        const existingUser = await UserModel.findOne({
+            $or: [{ email: email }, { username: username }]
+        });
+
+        if (existingUser) {
+            if (existingUser.email === email) {
+                throw new AppError("This email is already registered.", 400);
+            }
+            if (existingUser.username === username) {
+                throw new AppError("This username has already been taken. Please choose another.", 400);
+            }
+        }
+
+        // Hash the password
         const hashedPassword = await hashPassword(password);
-    
+
+        // Create the new user
         let newUser = await UserModel.create({
             username: username,
             email: email,
@@ -41,22 +66,19 @@ router.post("/signup", async (request, response) => {
         });
 
         console.log(`User created successfully: ${newUser.username} (${newUser.email})`);
-    
+
         let newJwt = generateJWT(newUser._id, newUser.username, newUser.isAdmin);
-    
-        response.status(200).json({
+
+        sendSuccessResponse(response, "User registered successfully.", {
             jwt: newJwt,
             user: {
                 id: newUser._id,
                 username: newUser.username
             }
         });
+    })
+);
 
-    } catch (error) {
-        console.error("Server Error: ", error);
-        sendError(response, 500, "Internal Server Error.");
-    }
-});
 
 
 
