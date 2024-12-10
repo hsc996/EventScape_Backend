@@ -3,18 +3,19 @@ const cors = require("cors");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
-const allowedOrigins = {
-    production: ["https://eventscape1.netlify.app"],
-    development: [
-        "http://localhost:3000", 
-        "http://localhost:5173", 
-        "http://127.0.0.1:5173"
-    ]
-};
+// const allowedOrigins = {
+//     production: ["https://eventscape1.netlify.app"],
+//     development: [
+//         "http://localhost:3000", 
+//         "http://localhost:5173", 
+//         "http://127.0.0.1:5173"
+//     ]
+// };
 
 // let corsOptions = {
 //     origin: (origin, callback) => {
@@ -48,13 +49,13 @@ const allowedOrigins = {
 // app.use(cors(corsOptions));
 
 
-// Global error handler for CORS
-app.use((err, req, res, next) => {
-    if (err.message === "CORS not allowed") {
-        return res.status(403).json({ message: "CORS not allowed" });
-    }
-    next(err);
-});
+// // Global error handler for CORS
+// app.use((err, req, res, next) => {
+//     if (err.message === "CORS not allowed") {
+//         return res.status(403).json({ message: "CORS not allowed" });
+//     }
+//     next(err);
+// });
 
 
 
