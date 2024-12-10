@@ -8,12 +8,22 @@ app.use(express.urlencoded({extended: true}));
 
 
 let corsOptions = {
-    origin: [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://eventscape1.netlify.app"
-    ],
+    origin: function (origin, callback) {
+        const validOrigins = [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "https://eventscape1.netlify.app"
+        ];
+
+        if (validOrigins.includes(origin) || !origin){
+            callback(null, true);
+        } else {
+            const err = new Error("Not allowed by CORS");
+            err.status = 403;
+            callback(err, false);
+        }
+    },
     optionsSuccessStatus: 200
 };
 

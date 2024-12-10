@@ -25,9 +25,9 @@ describe("Testing cors validation", () => {
     test("GET / should have correct CORS headers for valid origin", async () => {
         const response = await request(app)
             .get("/")
-            .set("Origin", "http://localhost:8080");
+            .set("Origin", "http://localhost:3000");
         expect(response.statusCode).toBe(200);
-        expect(response.header["access-control-allow-origin"]).toBe("http://localhost:8080");
+        expect(response.header["access-control-allow-origin"]).toBe("http://localhost:3000");
     });
 
     // Test regarding auth headers
