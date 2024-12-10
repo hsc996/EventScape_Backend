@@ -83,37 +83,35 @@ router.post(
 
 
 // Sign in existing account
-router.post("/signin", async (request, response) => {
-    try {
+router.post(
+    "/signin",
+    handleRoute(async (request, response) => {
         const { email, password } = request.body;
 
-        if (!email || !password){
-            return sendError(response, 400, "Incorrect or missing sign-in credentials provided.");
+        if (!email || !password) {
+            throw new AppError("Incorrect or missing sign-in credentials provided.", 400);
         }
 
-        if (!validateEmail(email)){
-            return sendError(response, 400, "Invalid email format.");
+        if (!validateEmail(email)) {
+            throw new AppError("Invalid email format.", 400);
         }
 
-        const user = await UserModel.findOne({
-            email: email
-        });
+        const user = await UserModel.findOne({ email: email });
 
-        if (!user){
-            return sendError(response, 404, "User not found. Please sign up first.");
+        if (!user) {
+            throw new AppError("User not found. Please sign up first.", 404);
         }
 
         const isPasswordValid = await comparePassword(password, user.password);
 
-
-        if (!isPasswordValid){
-            console.log("Invalid password attempt for email:", email); // Log the invalid password attempt
-            return sendError(response, 404, "Invalid password.");
+        if (!isPasswordValid) {
+            console.log("Invalid password attempt for email:", email); // Log invalid attempts
+            throw new AppError("Invalid password.", 401);
         }
 
         let newJwt = generateJWT(user._id, user.username, user.isAdmin);
 
-        response.status(200).json({
+        sendSuccessResponse(response, "Sign-in successful.", {
             jwt: newJwt,
             user: {
                 id: user._id,
@@ -122,11 +120,8 @@ router.post("/signin", async (request, response) => {
                 isAdmin: user.isAdmin
             }
         });
-    } catch (error) {
-        console.error("Server Error: ", error);
-        sendError(response, 500, "Internal Server Error.");
-    }
-});
+    })
+);
 
 
 
