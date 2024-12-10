@@ -76,7 +76,7 @@ router.patch(
         const { userId } = request.authUserData;
 
         if (!themeId) {
-            return sendError(response, 400, "Theme ID is required in the request body.");
+            throw new AppError(response, 400, "Theme ID is required in the request body.");
         }
         
         const result = await updateThemeSelection(eventId, themeId, userId);
@@ -98,7 +98,7 @@ router.delete(
         const { eventId } = request.params;
 
         if (!eventId) {
-            return sendError(response, 400, "Event ID is required.");
+            throw new Error(response, 400, "Event ID is required.");
         }
 
         const result = await removeThemeSelection(eventId);

@@ -2,7 +2,6 @@ const express = require("express");
 const { UserModel } = require("../models/UserModel.js");
 const { generateJWT } = require("../functions/jwtFunctions.js");
 const {
-    sendError,
     validateEmail,
     validatePassword,
     hashPassword,

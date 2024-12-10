@@ -14,7 +14,7 @@ function handleRoute(routeHandler){
                 return sendError(response, error.statusCode, error.message);
             }
 
-            return sendError(response, statusCode, error.message);
+            return sendError(response, 500, "Internal Server Error.");
         }
     }
 }
