@@ -7,17 +7,19 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
-let corsOptions = {
-    origin: [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://eventscape1.netlify.app"
-    ],
-    optionsSuccessStatus: 200
-};
+// let corsOptions = {
+//     origin: [
+//         "http://localhost:3000",
+//         "http://localhost:5173",
+//         "http://127.0.0.1:5173",
+//         "https://eventscape1.netlify.app"
+//     ],
+//     optionsSuccessStatus: 200
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
+app.use(cors());
 
 
 // Homepage route to confirm server is running
