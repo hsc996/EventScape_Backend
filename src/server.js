@@ -16,36 +16,36 @@ const allowedOrigins = {
     ]
 };
 
-let corsOptions = {
-    origin: (origin, callback) => {
-        if (process.env.NODE_ENV === "production"){
-            if (origin === "https://eventscape1.netlify.app"){
-                return callback(null, true);
-            }
-        } else {
-            const allowedOrigins = [
-                "http://localhost:8080", 
-                "http://localhost:5173", 
-                "http://127.0.0.1:5173"
-            ];
-            if (allowedOrigins.includes(origin) || !origin) {
-                return callback(null, true);
-            }
-        }
-        const err = new Error("CORS not allowed");
-        err.status = 403;
-        return callback(err);
-    },
-    optionsSuccessStatus: 200,
-    credentials: true
-};
-app.use((err, req, res, next) => {
-    if (err.message === "CORS not allowed") {
-        return res.status(403).json({ message: "CORS not allowed" });
-    }
-    next(err);
-});
-app.use(cors(corsOptions));
+// let corsOptions = {
+//     origin: (origin, callback) => {
+//         if (process.env.NODE_ENV === "production"){
+//             if (origin === "https://eventscape1.netlify.app"){
+//                 return callback(null, true);
+//             }
+//         } else {
+//             const allowedOrigins = [
+//                 "http://localhost:8080", 
+//                 "http://localhost:5173", 
+//                 "http://127.0.0.1:5173"
+//             ];
+//             if (allowedOrigins.includes(origin) || !origin) {
+//                 return callback(null, true);
+//             }
+//         }
+//         const err = new Error("CORS not allowed");
+//         err.status = 403;
+//         return callback(err);
+//     },
+//     optionsSuccessStatus: 200,
+//     credentials: true
+// };
+// app.use((err, req, res, next) => {
+//     if (err.message === "CORS not allowed") {
+//         return res.status(403).json({ message: "CORS not allowed" });
+//     }
+//     next(err);
+// });
+// app.use(cors(corsOptions));
 
 
 // Global error handler for CORS
