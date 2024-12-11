@@ -1,17 +1,24 @@
-const { app } =require("../server.js");
 const request = require("supertest");
+const { app } =require("../server.js");
+
+const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
+const { validatePassword, hashPassword, AppError } = require("../functions/helperFunctions.js");
 const { UserModel } = require("../models/UserModel.js");
-const validateUserAuth = require("../middleware/validateUserAuth.js");
+const { validateUserAuth } = require('../middleware/validateUserAuth.js');
+const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+
 
 // Mock the User to simulate the database
 
 jest.mock("../models/UserModel.js");
-jest.mock("../middlewares/validateUserAuth", () => ({
+jest.mock("../middleware/validateUserAuth.js", () => ({
     validateUserAuth: jest.fn((request, response, next) => {
         request.authUserData = { userId: "507f1f77bcf86cd799439011" };
         next();
     })
 }));
+
+
 
 describe("GET /user/view/:userId - Fetch User Profile", () => {
 
@@ -46,6 +53,7 @@ describe("GET /user/view/:userId - Fetch User Profile", () => {
 
     test("Should return 404 if user not found", async () => {
         const mockUserId = "507f1f77bcf86cd799439011";
+
         UserModel.findOne.mockResolvedValue(null);
 
         const response = await request(app).get(`/user/view/${mockUserId}`);
@@ -79,7 +87,7 @@ describe("GET /user/view/:userId - Fetch User Profile", () => {
 
 
 describe("PATCH /user/edit - Update User Profile", () => {
-    let mockUser;
+    let mockUserId;
     let mockUserData;
 
     beforeEach(() => {
@@ -88,14 +96,14 @@ describe("PATCH /user/edit - Update User Profile", () => {
     })
 
     test("Should status code 400 if username already taken", async () => {
-        const mockDuplicateData = { _id: "507f1f77bcf86cd799439010", username: "newUsername" };
+        let mockDuplicateData = { _id: "507f1f77bcf86cd799439010", username: "newUsername" }
 
         UserModel.findOne.mockResolvedValue(mockDuplicateData);
         
         const response = await request(app)
             .patch("/user/edit")
             .set("Authorization", "Bearer valid_token")
-            .send(mockUserData);
+            .send({ username: "newUsername" });
         
         expect(response.statusCode).toBe(400);
         expect(response.body).toEqual({
@@ -104,15 +112,70 @@ describe("PATCH /user/edit - Update User Profile", () => {
         });
     });
 
-    // test("Should return status code 400 if password does not meet criteria", async () => {
+    test("Should return status code 400 if password does not meet criteria", async () => {
+        let mockInvalidPassword = { password: "pw" };
 
-    // });
+        const response = await request(app)
+            .patch("/user/edit")
+            .set("Authorization", "Bearer valid_token")
+            .send(mockInvalidPassword);
 
-    // test("Should return status code 404 if user does not exist", async () => {
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toEqual({
+            success: false,
+            message:  "Password must be at least 8 characters and include at least one letter, one number, and one special character."
+        });
+    });
 
-    // });
+    test("Should return status code 404 if user does not exist", async () => {    
+        UserModel.findOne.mockResolvedValue(null);
+        UserModel.findOneAndUpdate.mockResolvedValue(null);
 
-    // test("Should return status code 200 and update profile successfully", async () => {
+        const response = await request(app)
+            .patch("/user/edit")
+            .set("Authorization", "Bearer valid_token")
+            .send(mockUserData);
+        
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({
+            success: false,
+            message: "User not found."
+        });
 
-    // });
+        expect(UserModel.findOneAndUpdate).toHaveBeenCalledWith(
+            { _id: expect.any(Object) },
+            expect.any(Object),
+            { new: true }
+        );
+    });
+    
+
+    test("Should return status code 200 and update profile successfully", async () => {
+        const updatedUserData = {
+            _id: mockUserId,
+            username: "newUsername",
+            email: "mockuser@example.com",
+            password: "hashedNewPassword123!",
+            isAdmin: false
+        };
+
+        UserModel.findOneAndUpdate.mockResolvedValue(updatedUserData);
+
+        const response = await request(app)
+            .patch("/user/edit")
+            .set("Authorization", "Bearer valid_token")
+            .send(mockUserData);
+        
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message: "Profile data updated successfully.",
+            data: updatedUserData
+        });
+
+        expect(UserModel.findOneAndUpdate).toHaveBeenCalledWith(
+            { _id: expect.any(Object) },
+            expect.any(Object),
+            { new: true }
+        );
+    });
 })

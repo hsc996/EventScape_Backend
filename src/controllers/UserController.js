@@ -46,10 +46,7 @@ router.patch(
 
         if (updateData.password) {
             if (!validatePassword(updateData.password)) {
-                throw new AppError(
-                    "Password must be at least 8 characters and include at least one letter, one number, and one special character.",
-                    400
-                );
+                throw new AppError("Password must be at least 8 characters and include at least one letter, one number, and one special character.", 400);
             }
             updateData.password = await hashPassword(updateData.password);
         }

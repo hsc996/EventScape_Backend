@@ -1,5 +1,4 @@
 # EventScape: Event Management Social Platform
-## FULL STACK APP T3A2-A
 
 ## Links
 
