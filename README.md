@@ -135,7 +135,7 @@ The app is built using the **MERN stack** (MongoDB, Express.js, React, and Node.
 ## Data Flow Diagram
 
 
-![DFD](/docs/DFD4.png)
+![DFD](/src/docs/DFD4.png)
 
 
 This Data Flow Diagram (DFD) follows the Yourdon and Coad notation in order to provide a clear and structured visualisation of how the data will be processed, stores and communicated within this application. By following this notation style, the diagram ensures consistency, clarity and an easily interpretable view of system interaction at a high level. The diagram uses the following conventions:
@@ -149,7 +149,7 @@ This Data Flow Diagram (DFD) follows the Yourdon and Coad notation in order to p
 ## Application Architechture Diagram
 
 
-![AAD](/docs/APP_ARCH_D.png)
+![AAD](/src/docs/APP_ARCH_D.png)
 
 
 
@@ -157,22 +157,22 @@ This Data Flow Diagram (DFD) follows the Yourdon and Coad notation in order to p
 
 The image below is the user stories for EventScape, 4 user stories in the "As a {person}, I want to do {feature/action} because of {need/reason}" format.
 
-![UserStories](docs/User%20Stories.png)
+![UserStories](/src/docs/User%20Stories.png)
 
 As an elabration of the user stories above, please see below  the first iteration of the user personas and their different perscpectives of what problem the app will solve.
 
-![UserPersonas](/docs/User%20persona%20version%201.png)
+![UserPersonas](/src/docs/User%20persona%20version%201.png)
 
 The second iteration(below), is a refined version of the user stories with more of a focus on the MVP of the app.
 
-![UserPersonas2](/docs/User%20Personas%20Version%202%20.png)
+![UserPersonas2](/src/docs/User%20Personas%20Version%202%20.png)
 
 
 ## Wireframes
 
 For the wireframes I've kept the styling simple, using Poppins as the main font, used because its a clear easy to read font. I've gone with a simple colour scheme, to not be too disctracting for users, especially since a large feature of the app is the colour customisation.
 
-![ColourPalette](/docs/Colour%20Palette.png)
+![ColourPalette](/src/docs/Colour%20Palette.png)
 
 Here is the Sitemap showing the interaction between pages:
 <img width="884" alt="Sitemap" src="https://github.com/user-attachments/assets/fc70f7ea-235c-4559-85d8-e6df66485b66">
@@ -182,27 +182,27 @@ Here is the Sitemap showing the interaction between pages:
 Below you can see the wide-screen wireframes, the first screenshot shows the 'Create new Account 'page, which upon clicking 'Sign-up' leads to the 'See My Events' page, which leads to the My Events/My Calendar. The 'Create New' button leads to the Event Creation page, where the user creates the event invitation. In the second screenshot there are examples of what a user might 'publish' as their styled Event Invite. There is also a 'See you there!' page when a user clicks 'Attending' on an event.
 
 
-![WireframeDesktop1](/docs/Widescreen%20Wireframes%201.png)
+![WireframeDesktop1](/src/docs/Widescreen%20Wireframes%201.png)
 
-![WireframeDesktop2](/docs/Widescreen%20Wireframes%202.png)
+![WireframeDesktop2](/src/docs/Widescreen%20Wireframes%202.png)
 
 ### Mobile Wireframes
 
 I've kept the Mobile wireframes simple, similar to the Wide-screen wireframes, just with vertical stacking instead of the larger grid used for the wide-screen wireframes.
 
-![WireframesMobile](/docs/Phone%20Wireframes.png)
+![WireframesMobile](/src/docs/Phone%20Wireframes.png)
 
 
 
 ## Trello Board
 
-![appdec](/docs/trello/appdesc_checklist.png)
+![appdec](/src/docs/trello/appdesc_checklist.png)
 
-![wireframe](/docs/trello/wireframes_trello.png)
+![wireframe](/src/docs/trello/wireframes_trello.png)
 
-![finaliseA](/docs//duedate_trello.png)
+![finaliseA](/src/docs//duedate_trello.png)
 
-![dates_trello](docs/dates_trello.png)
+![dates_trello](/src/docs/dates_trello.png)
 
 Our team has utilised the Agile planning methodology with Trello to efficiently manage our application development process. We've structured our workflow with "To Do," "In Progress," and "Completed" card lists to maintain clear organisation. Each task card includes due dates, relevant links, detailed checklists, and member assignments, ensuring accountability and streamlined collaboration.
 
