@@ -73,7 +73,7 @@ router.delete(
 
         const result = await deleteOneUser({_id: userId});
 
-        if (!result){
+        if (!result || result.deletedCount === 0){
             throw new AppError("User not found.", 404);
         }
 

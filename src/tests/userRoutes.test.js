@@ -1,16 +1,11 @@
 const request = require("supertest");
 const { app } =require("../server.js");
 
-const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
-const { validatePassword, hashPassword, AppError } = require("../functions/helperFunctions.js");
 const { UserModel } = require("../models/UserModel.js");
-const { validateUserAuth } = require('../middleware/validateUserAuth.js');
-const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 
-
-// Mock the User to simulate the database
 
 jest.mock("../models/UserModel.js");
+
 jest.mock("../middleware/validateUserAuth.js", () => ({
     validateUserAuth: jest.fn((request, response, next) => {
         request.authUserData = { userId: "507f1f77bcf86cd799439011" };
@@ -93,7 +88,7 @@ describe("PATCH /user/edit - Update User Profile", () => {
     beforeEach(() => {
         mockUserId = "507f1f77bcf86cd799439011";
         mockUserData = { username: "newUsername", password: "NewP@ssw0rd!" };
-    })
+    });
 
     test("Should status code 400 if username already taken", async () => {
         let mockDuplicateData = { _id: "507f1f77bcf86cd799439010", username: "newUsername" }
@@ -177,5 +172,41 @@ describe("PATCH /user/edit - Update User Profile", () => {
             expect.any(Object),
             { new: true }
         );
+    });
+})
+
+
+
+describe("DELETE /user/delete - Delete User Profile", () => {
+
+    const mockUserId = "507f1f77bcf86cd799439011";
+
+    test("Should return status code 404 if user does not exist", async () => {
+        UserModel.deleteOne.mockResolvedValue({ deletedCount: 0 });
+
+        const response = await request(app)
+            .delete("/user/delete")
+            .set("Authorization", "Bearer valid_token");
+
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({
+            success: false,
+            message: "User not found."
+        });
+        expect(UserModel.deleteOne).toHaveBeenCalledWith({ _id: mockUserId });
+    });
+
+    test("Should return status code 200 and update profile succesfully", async () => {
+        UserModel.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+        const response = await request(app)
+            .delete("/user/delete")
+            .set("Authorization", "Bearer valid_token");
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message:`Profile with ID ${mockUserId} deleted successfully.`,
+            data: { deletedCount: 1 }
+        })
     });
 })
