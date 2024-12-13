@@ -67,7 +67,7 @@ async function findActiveEventsForUser(userId){
     }
     try {
         const events = await EventModel.find({
-            attendees: userId,
+            invited: userId,
             isActive: true
         });
 
@@ -85,6 +85,33 @@ async function findActiveEventsForUser(userId){
         }
 
         throw new AppError("Error finding active events, please try again.");
+    }
+}
+
+async function findAllHostEvents(userId){
+    if (!userId){
+        throw new AppError("User ID must be provided.", 400);
+    }
+
+    try {
+        const events = await EventModel.find({
+            host: userId,
+            isActive: true
+        });
+
+        if (!events || events.length === 0){
+            throw new AppError("This user is not currently hosting any events.", 404);
+        }
+
+        return events;
+    } catch (error) {
+        console.error("Error finding active events hosted by this user: ", error.message);
+
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        throw new AppError("Error finding active events hosted by this user, please try again.");
     }
 }
 
@@ -180,5 +207,6 @@ module.exports = {
     updateOneEvent,
     deleteOneEvent,
     findActiveEventsForUser,
-    findPrivateEvent
+    findPrivateEvent,
+    findAllHostEvents
 }

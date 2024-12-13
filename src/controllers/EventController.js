@@ -8,7 +8,8 @@ const {
     updateOneEvent,
     deleteOneEvent,
     findActiveEventsForUser,
-    findPrivateEvent
+    findPrivateEvent,
+    findAllHostEvents
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
 const { AppError } = require("../functions/errorFunctions.js");
@@ -40,6 +41,25 @@ router.get(
         sendSuccessResponse(response, "Active events retrieved successfully.", result);
     })
 );
+
+
+// Find all active events the user is hosting
+
+router.get("/hosting", validateUserAuth, handleRoute(async (request, response) => {
+    const { userId } = request.authUserData;
+
+    if (!userId){
+        throw new AppError("User not found.", 404);
+    }
+
+    const result = await findAllHostEvents(userId);
+
+    if (!result.length){
+        throw new AppError("No active events found hosted by this user.", 404);
+    }
+
+    sendSuccessResponse(response, "Active events hosted by this user retrieved successfully.", result);
+}))
 
 
 // View Event (Public)
