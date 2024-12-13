@@ -1,6 +1,6 @@
 const { RSVPModel } = require("../../models/RSVPModel.js");
 const { EventModel } = require("../../models/EventModel.js");
-const { AppError } = require("../../functions/helperFunctions.js");
+const { AppError } = require("../../functions/errorFunctions.js");
 
 
 // Post a yes/no/maybe RSVP on an event

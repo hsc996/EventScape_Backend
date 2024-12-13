@@ -30,12 +30,12 @@ const EventSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    attendees: [{
+    invited: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     }],
-    invited: [{
+    attendees: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: false

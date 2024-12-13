@@ -1,9 +1,8 @@
 const { EventModel } = require("../../models/EventModel.js");
-const { AppError } = require("../../functions/helperFunctions.js");
+const { AppError } = require("../../functions/errorFunctions.js");
 
 
-
-async function createEvent(eventName, description, eventDate, location, host, attendees){
+async function createEvent(eventName, description, eventDate, location, host, invited){
     try {
         const result = await EventModel.create({
             eventName: eventName,
@@ -11,10 +10,10 @@ async function createEvent(eventName, description, eventDate, location, host, at
             eventDate: eventDate,
             location: location,
             host: host,
-            attendees: attendees
+            invited: invited
         });
 
-        if (!eventName || !description || !eventDate || !location || !host || !attendees){
+        if (!eventName || !description || !eventDate || !location || !host || !invited){
             return response.status(400).json({
                 message: "Please complete all of the required fields."
             });

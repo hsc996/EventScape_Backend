@@ -10,7 +10,7 @@ const {
     isAlreadyFollowing
 } = require("../utils/crud/FollowerCrud");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/errorFunctions.js");
 
 const router = express.Router();
 

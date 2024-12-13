@@ -1,27 +1,10 @@
 const bcrypt = require("bcrypt");
 const { RSVPModel } = require("../models/RSVPModel");
+const { AppError } = require("../functions/errorFunctions.js");
 
 const saltRounds = 10;
 
 //Helper Functions
-
-function sendError(response, statusCode, message) {
-    return response.status(statusCode).json({
-        success: false,
-        message: message
-    });
-}
-
-
-class AppError extends Error {
-    constructor(message, statusCode = 500) {
-        super(message);
-        this.statusCode = statusCode;
-        this.isOperational = true;
-        Error.captureStackTrace(this, this.constructor);
-    }
-}
-
 
 function validateEmail(email){
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,8 +40,6 @@ async function checkRSVPExistence(eventId, userId){
 
 
 module.exports = {
-    sendError,
-    AppError,
     validateEmail,
     validatePassword,
     hashPassword,

@@ -2,10 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const { findOneUser, updateOneUser, deleteOneUser } = require('../utils/crud/UserCrud.js');
-const { validatePassword, hashPassword, AppError } = require("../functions/helperFunctions.js");
+const { validatePassword, hashPassword } = require("../functions/helperFunctions.js");
 const { UserModel } = require("../models/UserModel.js");
 const { validateUserAuth } = require('../middleware/validateUserAuth.js');
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
+const { AppError } = require("../functions/errorFunctions.js");
 
 const router = express.Router();
 

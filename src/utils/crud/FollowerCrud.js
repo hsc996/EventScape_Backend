@@ -1,5 +1,5 @@
 const { FollowerModel } = require("../../models/FollowerModel.js");
-const { AppError } = require("../../functions/helperFunctions.js");
+const { AppError } = require("../../functions/errorFunctions.js");
 
 // Find a follower
 async function findOneFollower(query){

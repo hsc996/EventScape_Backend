@@ -2,7 +2,7 @@ const express = require("express");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/errorFunctions.js");
 const { findPublicEvents, findPrivateEvents } = require("../utils/crud/EventSearchCrud.js");
 
 const router = express.Router();

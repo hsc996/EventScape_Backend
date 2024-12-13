@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const {
@@ -10,7 +11,9 @@ const {
     findPrivateEvent
 } = require("../utils/crud/EventCrud.js");
 const { handleRoute, sendSuccessResponse, checkEventPermission } = require("../middleware/routerMiddleware.js");
-const { AppError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/errorFunctions.js");
+const { isValidObjectId } = require("mongoose");
+const { validateEventData } = require("../functions/validationFunctions.js");
 const { FollowerModel } = require("../models/FollowerModel");
 
 const router = express.Router();
@@ -47,6 +50,10 @@ router.get(
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
 
+        if (!isValidObjectId(eventId)) {
+            throw new AppError("Invalid event ID format.", 400);
+        }
+
         let result = await findOneEvent({ _id: eventId });
 
         if (!result){
@@ -68,7 +75,15 @@ router.get(
         const { eventId } = request.params;
         const { userId } = request.authUserData;
 
+        if (!isValidObjectId(eventId)) {
+            throw new AppError("Invalid event ID format.", 400);
+        }
+
         let result = await findPrivateEvent(eventId, userId);
+
+        if (!result) {
+            throw new AppError("Private event not found or user not authorised.", 403);
+        }
 
         sendSuccessResponse(response, "Event retrieved successfully", result);
     })
@@ -88,24 +103,12 @@ router.post(
             eventDate,
             location,
             host,
-            attendees
+            invited
         } = request.body;
 
-        if (!eventName || !description || !eventDate || !location || !host || !attendees){
-            throw new AppError("Please complete all of the required fields.", 400);
-        }
+        validateEventData({ eventName, description, eventDate, location, host, invited });
 
-        if (new Date(eventDate) <= new Date()) {
-            throw new AppError("Event date must be in the future.", 400);
-        }
-
-        if (location.trim().length < 3) {
-            throw new AppError("Location must be at least 3 characters long.", 400);
-        }
-
-        let newEvent = await createEvent(eventName, description, eventDate, location, host, attendees);
-
-        console.log(`Event created successfully: ${newEvent.eventName} at ${newEvent.location}`);
+        let newEvent = await createEvent(eventName, description, eventDate, location, host, invited);
 
         sendSuccessResponse(response, "Event created successfully.", {
             id: newEvent._id,
@@ -114,7 +117,7 @@ router.post(
             eventDate: newEvent.eventDate,
             location: newEvent.location,
             host: newEvent.host,
-            attendees: newEvent.attendees,
+            invited: newEvent.invited,
         });
     })
 );
@@ -131,8 +134,15 @@ router.patch(
         const { eventId } = request.params;
         const updateData = request.body;
 
-        if (!eventId){
-            throw new AppError("Event not found.", 404);
+        if (!isValidObjectId(eventId)) {
+            throw new AppError("Invalid event ID format.", 400);
+        }
+
+        const allowedUpdates = ["eventName", "description", "eventDate", "location", "invited"];
+        const invalidFields = Object.keys(updateData).filter(key => !allowedUpdates.includes(key));
+
+        if (invalidFields.length) {
+            throw new AppError(`Invalid fields for update: ${invalidFields.join(", ")}`, 400);
         }
 
         const updatedEvent = await updateOneEvent(
@@ -159,6 +169,10 @@ router.delete(
     handleRoute(async (request, response) => {
         const { eventId } = request.params;
 
+        if (!isValidObjectId(eventId)) {
+            throw new AppError("Invalid event ID format.", 400);
+        }
+
         let result = await deleteOneEvent({_id: eventId});
 
         if (!result){
@@ -172,6 +186,7 @@ router.delete(
 );
 
 
+
 // Invite Followers to Event
 
 router.post(
@@ -182,6 +197,10 @@ router.post(
         const { eventId } = request.params;
         const { userId } = request.authUserData;
         const { invitedUserIds } = request.body;
+
+        if (!isValidObjectId(eventId)) {
+            throw new AppError("Invalid event ID format.", 400);
+        }
 
         const event = await findOneEvent({ _id: eventId });
         if (!event){
@@ -220,5 +239,6 @@ router.post(
         });
     })
 );
+
 
 module.exports = router;

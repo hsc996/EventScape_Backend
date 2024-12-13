@@ -1,7 +1,7 @@
 // Router middleware
 const { EventModel } = require("../models/EventModel.js");
 const { RSVPModel } = require("../models/RSVPModel.js");
-const { AppError, sendError } = require("../functions/helperFunctions.js");
+const { AppError, sendError } = require("../functions/errorFunctions.js");
 
 function handleRoute(routeHandler){
     return async function (request, response, next){

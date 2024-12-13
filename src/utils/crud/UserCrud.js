@@ -1,4 +1,5 @@
 const { UserModel } = require("../../models/UserModel.js");
+const { AppError } = require("../../functions/errorFunctions.js");
 
 
 // Sign up route - accessed by Auth Controllers

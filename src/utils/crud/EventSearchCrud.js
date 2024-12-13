@@ -1,5 +1,5 @@
 const { EventModel } = require("../../models/EventModel.js");
-const { AppError } = require("../../functions/helperFunctions");
+const { AppError } = require("../../functions/errorFunctions.js");
 
 
 async function findPublicEvents(query){

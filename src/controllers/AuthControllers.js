@@ -8,7 +8,7 @@ const {
     comparePassword
 } = require("../functions/helperFunctions.js");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
-const { AppError } = require("../functions/helperFunctions.js");
+const { AppError } = require("../functions/errorFunctions.js");
 const { userValidationSchema, signinValidationSchema } = require("../utils/validation/userValidation.js");
 
 const router = express.Router();
