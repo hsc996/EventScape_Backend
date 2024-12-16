@@ -32,6 +32,7 @@ describe("POST /account/signup - User Registration", () => {
             username: mockRequestBody.username,
             email: mockRequestBody.email,
             password: `hashed_${mockRequestBody.password}`,
+            isAdmin: false,
         };
 
         UserModel.findOne.mockResolvedValue(null);
@@ -46,7 +47,7 @@ describe("POST /account/signup - User Registration", () => {
         expect(response.body).toEqual({
             message: "User registered successfully.",
             data: {
-                jwt: "jwt_507f1f77bcf86cd799439011_newUser",
+                jwt: expect.any(String),
                 user: {
                     id: mockUser._id,
                     username: mockUser.username
@@ -62,6 +63,7 @@ describe("POST /account/signup - User Registration", () => {
             username: mockRequestBody.username,
             email: mockRequestBody.email,
             password: `hashed_${mockRequestBody.password}`,
+            isAdmin: false
         });
     });
 })

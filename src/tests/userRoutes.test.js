@@ -72,7 +72,7 @@ describe("GET /user/view/:userId - Fetch User Profile", () => {
         expect(response.statusCode).toBe(500);
         expect(response.body).toEqual({
             success: false,
-            message: "Internal Server Error.",
+            message: "Error finding profile, please try again later.",
         });
         expect(UserModel.findOne).toHaveBeenCalledWith({ _id: mockUserId });
     });
