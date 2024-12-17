@@ -19,10 +19,11 @@ router.get("/public",
         }
 
         const result = await findPublicEvents(query);
-        console.log("Search Result:", result);
 
-        if (!result.length){
-            throw new AppError("No public events found matching your search.", 404);
+        if (result.message) {
+            return response.status(404).json({
+                message: result.message
+            });
         }
 
         sendSuccessResponse(response, "Event search completed successfully.", result);
