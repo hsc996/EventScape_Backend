@@ -21,6 +21,10 @@ async function createRSVP(data){
             throw new AppError("Event not found.", 404);
         }
 
+        if (event.host.toString() === userId.toString()){
+            throw new AppError("The host cannot RSVP to their own event.", 403);
+        }
+
         if (!event.invited.includes(userId)){
             throw new AppError("User is not invited to this event.", 403);
         }
@@ -72,6 +76,14 @@ async function updateRSVP(query, updatedData){
 
         if (!event){
             throw new AppError("Event not found.", 404);
+        }
+
+        if (event.host.toString() === userId.toString()){
+            throw new AppError("The host cannot RSVP to their own event.", 403);
+        }
+
+        if (!event.invited.includes(userId)){
+            throw new AppError("User is not invited to this event.", 403);
         }
 
         switch (status) {
