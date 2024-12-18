@@ -205,7 +205,7 @@ async function dropAndSeed(){
                 isActive: true
             },
             {
-                eventName: "Blockchain and Cryptocurrency Conference",
+                eventName: "Blockchain Conference",
                 description: "A global conference where industry experts discuss the future of Blockchain technology, cryptocurrency trends, and its impact on various sectors.",
                 eventDate: new Date('2025-02-05T09:00:00Z'),
                 location: "Convention Center, Chicago, IL",
