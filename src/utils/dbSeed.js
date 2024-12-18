@@ -44,6 +44,30 @@ async function dropAndSeed(){
                 isAdmin: false,
                 followers: [],
                 following: []
+            },
+            {
+                username: "User4",
+                email: "userfour@gmail.com",
+                password: "Password00!",
+                isAdmin: false,
+                followers: [],
+                following: []
+            },
+            {
+                username: "User5",
+                email: "userfive@gmail.com",
+                password: "Password11!",
+                isAdmin: false,
+                followers: [],
+                following: []
+            },
+            {
+                username: "User6",
+                email: "usersix@gmail.com",
+                password: "Password44!",
+                isAdmin: false,
+                followers: [],
+                following: []
             }
         ];
 
@@ -54,56 +78,63 @@ async function dropAndSeed(){
         const insertedUsers = await UserModel.insertMany(users);
         console.log("Users seeded successfully.");
 
-                const admin = insertedUsers[0];
-                const user2 = insertedUsers[1];
-                const user3 = insertedUsers[2];
-        
-                admin.following = [user2._id, user3._id];
-                user2.followers = [admin._id];
-        
-                user2.following = [user3._id];
-                user3.followers = [user2._id];
-        
-                user3.followers.push(admin._id);
-        
-                await admin.save();
-                await user2.save();
-                await user3.save();
-        
-                console.log("Followers and following relationships updated successfully.");
 
-            const events = [
-                {
-                    eventName: "Dog Wedding",
-                    description: "Please join us to celebrate the long-awaited union of Fluffy and Rocket.",
-                    eventDate: new Date('2024-12-05T15:00:00Z'),
-                    location: "Hyde Park, Sydney CBD",
-                    host: insertedUsers[0]._id,
-                    invited: [insertedUsers[1]._id, insertedUsers[2]._id],
-                    isPublic: true,
-                    isActive: true
-                },
-                {
-                    eventName: "Sam's 21st Birthday",
-                    description: "Come celebrate Sam's milestone birthday! There will be cake, drinks, and lots of fun. Don't miss it!",
-                    eventDate: new Date('2024-12-18T19:00:00Z'),
-                    location: 'Sam\'s House, Los Angeles, CA',
-                    host: insertedUsers[1]._id,
-                    invited: [insertedUsers[0]._id, insertedUsers[2]._id],
-                    isPublic: true,
-                    isActive: true
-                },
-                {
-                    eventName: 'Family Barbecue',
-                    description: 'Join us for a casual family BBQ with lots of food, drinks, and games. Bring your loved ones and enjoy!',
-                    eventDate: new Date('2024-12-25T12:00:00Z'),
-                    location: 'Grandma\'s Backyard, Chicago, IL',
-                    host: insertedUsers[2]._id,
-                    invited: [insertedUsers[0]._id, insertedUsers[1]._id],
-                    isPublic: false,
-                    isActive: true
-                }
-            ];
+        const followData = [
+            { followerId: insertedUsers[0]._id, followingId: insertedUsers[1]._id },
+            { followerId: insertedUsers[0]._id, followingId: insertedUsers[2]._id },
+            { followerId: insertedUsers[1]._id, followingId: insertedUsers[0]._id },
+            { followerId: insertedUsers[1]._id, followingId: insertedUsers[2]._id },
+            { followerId: insertedUsers[2]._id, followingId: insertedUsers[0]._id },
+            { followerId: insertedUsers[2]._id, followingId: insertedUsers[1]._id },
+            { followerId: insertedUsers[3]._id, followingId: insertedUsers[4]._id },
+            { followerId: insertedUsers[3]._id, followingId: insertedUsers[5]._id },
+            { followerId: insertedUsers[4]._id, followingId: insertedUsers[3]._id },
+            { followerId: insertedUsers[4]._id, followingId: insertedUsers[5]._id },
+            { followerId: insertedUsers[5]._id, followingId: insertedUsers[3]._id },
+            { followerId: insertedUsers[5]._id, followingId: insertedUsers[4]._id },
+            { followerId: insertedUsers[0]._id, followingId: insertedUsers[5]._id },
+            { followerId: insertedUsers[1]._id, followingId: insertedUsers[4]._id },
+            { followerId: insertedUsers[2]._id, followingId: insertedUsers[5]._id },
+            { followerId: insertedUsers[3]._id, followingId: insertedUsers[0]._id },
+            { followerId: insertedUsers[4]._id, followingId: insertedUsers[1]._id },
+            { followerId: insertedUsers[5]._id, followingId: insertedUsers[2]._id }
+        ];
+
+        await FollowerModel.insertMany(followData);
+        console.log("Followers seeded successfully.");
+
+        const events = [
+            {
+                eventName: "Dog Wedding",
+                description: "Please join us to celebrate the long-awaited union of Fluffy and Rocket.",
+                eventDate: new Date('2024-12-05T15:00:00Z'),
+                location: "Hyde Park, Sydney CBD",
+                host: insertedUsers[0]._id,
+                invited: [insertedUsers[1]._id, insertedUsers[2]._id],
+                isPublic: true,
+                isActive: true
+            },
+            {
+                eventName: "Sam's 21st Birthday",
+                description: "Come celebrate Sam's milestone birthday! There will be cake, drinks, and lots of fun. Don't miss it!",
+                eventDate: new Date('2024-12-18T19:00:00Z'),
+                location: 'Sam\'s House, Los Angeles, CA',
+                host: insertedUsers[1]._id,
+                invited: [insertedUsers[0]._id, insertedUsers[2]._id],
+                isPublic: true,
+                isActive: true
+            },
+            {
+                eventName: 'Family Barbecue',
+                description: 'Join us for a casual family BBQ with lots of food, drinks, and games. Bring your loved ones and enjoy!',
+                eventDate: new Date('2024-12-25T12:00:00Z'),
+                location: 'Grandma\'s Backyard, Chicago, IL',
+                host: insertedUsers[2]._id,
+                invited: [insertedUsers[0]._id, insertedUsers[1]._id],
+                isPublic: false,
+                isActive: true
+            }
+        ];
 
         const insertedEvents = await EventModel.insertMany(events);
         console.log("Events seeded successfully.");
@@ -140,21 +171,6 @@ async function dropAndSeed(){
         await RSVPModel.insertMany(rsvpData);
         console.log("RSVPs seeded successfully.");
 
-        const followData = [
-            {
-                followerId: insertedUsers[0]._id,
-                followingId: insertedUsers[1]._id
-            },
-            {
-                followerId: insertedUsers[1]._id,
-                followingId: insertedUsers[2]._id
-            },
-            {
-                followerId: insertedUsers[2]._id,
-                followingId: insertedUsers[1]._id
-            }
-        ];
-
         const themes = [
             {
                 themeName: "Light Theme",
@@ -176,9 +192,6 @@ async function dropAndSeed(){
 
         await ThemeTemplateModel.insertMany(themes);
         console.log("Themes seeded successfully.");
-
-        await FollowerModel.insertMany(followData);
-        console.log("Followers seeded successfully.");
 
     } catch (error) {
         console.log("Error seeding database: ", error);

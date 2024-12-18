@@ -26,9 +26,16 @@ async function findOneFollower(query){
 async function getFollowers(query){
     try {
         const followers = await FollowerModel.find({ followingId: query })
-            .populate("followerId");
+            .populate("followerId")
+            .select("username email");
 
-        return followers;
+            const simplifiedFollowers = followers.map(follower => ({
+                userId: follower.followerId._id,
+                username: follower.followerId.username,
+                email: follower.followerId.email
+            }));
+    
+            return simplifiedFollowers;
     } catch (error) {
         console.error("Error retrieving followers list: ", error.message);
 

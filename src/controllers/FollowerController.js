@@ -16,6 +16,7 @@ const router = express.Router();
 
 
 // See all followers for a single user
+
 router.get(
     "/:userId/followers",
     handleRoute(async (request, response) => {
@@ -35,6 +36,7 @@ router.get(
 
 
 // See all following for a single user
+
 router.get(
     "/:userId/following",
     handleRoute(async (request, response) => {
@@ -53,6 +55,7 @@ router.get(
 
 
 // Follow Account
+
 router.post(
     "/:userId",
     validateUserAuth,
@@ -84,6 +87,7 @@ router.post(
 
 
 // Unfollow Account
+
 router.delete(
     "/unfollow/:userId",
     validateUserAuth,
