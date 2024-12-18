@@ -213,6 +213,26 @@ async function dropAndSeed(){
                 invited: [insertedUsers[0]._id, insertedUsers[1]._id, insertedUsers[3]._id, insertedUsers[5]._id],
                 isPublic: true,
                 isActive: true
+            },
+            {
+                eventName: "Art Exhibition: Modern Art",
+                description: "Explore the world of modern art in this exclusive exhibition.",
+                eventDate: new Date("2024-12-10T15:00:00Z"),
+                location: "Gallery 1, Downtown",
+                host: insertedUsers[1]._id,
+                invited: [insertedUsers[0]._id, insertedUsers[2]._id],
+                isPublic: true,
+                isActive: true
+            },
+            {
+                eventName: "Sculpture Workshop",
+                description: "Join us for a hands-on sculpture workshop by renowned artists.",
+                eventDate: new Date("2024-12-12T09:00:00Z"),
+                location: "Art Center, Central Park",
+                host: insertedUsers[2]._id, 
+                invited: [insertedUsers[0]._id, insertedUsers[1]._id, insertedUsers[3]._id],
+                isPublic: true,
+                isActive: true
             }
         ];
 

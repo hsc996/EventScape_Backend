@@ -14,11 +14,12 @@ router.get("/public",
     async (request, response) => {
         const { query } = request.query;
 
-        if (!query){
+        if (!query ){
             throw new AppError("Search query is required.", 400);
         }
 
         const result = await findPublicEvents(query);
+        console.log("Search Result:", result);
 
         if (result.message) {
             return response.status(404).json({
