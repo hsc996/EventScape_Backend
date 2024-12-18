@@ -2,7 +2,19 @@ const { EventModel } = require("../../models/EventModel.js");
 const { AppError } = require("../../functions/errorFunctions.js");
 
 
-async function findPublicEvents(query, filters = {}) {
+const findAllPublicEvents = async () => {
+    try {
+        const events = await EventModel.find({ isPublic: true });
+
+        return events;
+    } catch (error) {
+        console.error("Error fetching all public events:", error);
+        throw new Error("Failed to fetch all public events.");
+    }
+};
+
+
+async function searchPublicEvents(query, filters = {}) {
     try {
         const searchQuery = {
             $text: { $search: query },
@@ -30,7 +42,7 @@ async function findPublicEvents(query, filters = {}) {
 }
 
 
-async function findPrivateEvents(query, userId, filters = {}){
+async function searchPrivateEvents(query, userId, filters = {}){
     try {
         const searchQuery = {
             $text: { $search: query },
@@ -56,6 +68,7 @@ async function findPrivateEvents(query, userId, filters = {}){
 }
 
 module.exports = {
-    findPublicEvents,
-    findPrivateEvents
+    findAllPublicEvents,
+    searchPublicEvents,
+    searchPrivateEvents
 }
