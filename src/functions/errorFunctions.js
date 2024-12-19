@@ -1,8 +1,4 @@
 function sendError(response, statusCode, message) {
-    if (error) {
-        console.error('Error Details:', error.stack || error.message || error);  // Log stack trace or message
-    }
-
     return response.status(statusCode).json({
         success: false,
         message: message
