@@ -117,13 +117,13 @@ router.post(
     "/create",
     validateUserAuth,
     handleRoute(async (request, response) => {
+        const { userId: host } = request.authUserData
         console.log("Incoming request data:", request.body);
         const {
             eventName,
             description,
             eventDate,
             location,
-            host,
             invited
         } = request.body;
 
