@@ -25,6 +25,10 @@ const EventSchema = new mongoose.Schema({
         minLength: 3,
         trim: true
     },
+    theme: { 
+        type: String,
+        default: "default"
+    },
     host: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -50,11 +54,6 @@ const EventSchema = new mongoose.Schema({
         ref: 'User',
         required: false
     }],
-    theme: { 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ThemeTemplate",
-        default: null
-    },
     isPublic: {
         type: Boolean,
         default: false
