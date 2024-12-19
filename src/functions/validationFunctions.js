@@ -19,12 +19,14 @@ function validateEventData({ eventName, description, eventDate, location, host, 
         throw new AppError("Event date must be in the future.", 400);
     }
 
-    if (!Array.isArray(invited) || invited.some(id => !isValidObjectId(id))) {
-        throw new AppError("Invited users must be a valid list of user IDs.", 400);
-    }
-
     if (location.trim().length < 3) {
         throw new AppError("Location must be at least 3 characters long.", 400);
+    }
+
+    if (invited !== undefined && invited !== null) {
+        if (!Array.isArray(invited) || invited.some(id => !isValidObjectId(id))) {
+            throw new AppError("Invited users must be a valid list of user IDs.", 400);
+        }
     }
 }
 

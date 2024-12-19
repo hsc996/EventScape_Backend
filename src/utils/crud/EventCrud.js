@@ -4,32 +4,15 @@ const { AppError } = require("../../functions/errorFunctions.js");
 
 async function createEvent(eventName, description, eventDate, location, host, invited){
     try {
+
         const result = await EventModel.create({
             eventName: eventName,
             description: description,
             eventDate: eventDate,
             location: location,
             host: host,
-            invited: invited
+            invited: invited || []
         });
-
-        if (!eventName || !description || !eventDate || !location || !host || !invited){
-            return response.status(400).json({
-                message: "Please complete all of the required fields."
-            });
-        }
-
-        if (new Date(eventDate) <= new Date()) {
-            return response.status(400).json({
-                message: "Event date must be in the future."
-            });
-        }
-
-        if (location.trim().length < 3) {
-            return response.status(400).json({
-                message: "Location must be at least 3 characters long."
-            });
-        }
 
         return result;
 
