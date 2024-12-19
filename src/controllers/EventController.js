@@ -123,12 +123,13 @@ router.post(
             description,
             eventDate,
             location,
-            invited
+            invited,
+            theme
         } = request.body;
 
-        validateEventData({ eventName, description, eventDate, location, host, invited });
+        validateEventData({ eventName, description, eventDate, location, host, invited, theme });
 
-        let newEvent = await createEvent(eventName, description, eventDate, location, host, invited);
+        let newEvent = await createEvent(eventName, description, eventDate, location, host, invited, theme);
 
         sendSuccessResponse(response, "Event created successfully.", {
             id: newEvent._id,
@@ -138,6 +139,7 @@ router.post(
             location: newEvent.location,
             host: newEvent.host,
             invited: newEvent.invited,
+            theme: newEvent.theme
         });
     })
 );

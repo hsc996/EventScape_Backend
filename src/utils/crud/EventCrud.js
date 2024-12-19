@@ -2,7 +2,7 @@ const { EventModel } = require("../../models/EventModel.js");
 const { AppError } = require("../../functions/errorFunctions.js");
 
 
-async function createEvent(eventName, description, eventDate, location, host, invited){
+async function createEvent(eventName, description, eventDate, location, host, invited, theme){
     try {
 
         const result = await EventModel.create({
@@ -11,7 +11,8 @@ async function createEvent(eventName, description, eventDate, location, host, in
             eventDate: eventDate,
             location: location,
             host: host,
-            invited: invited || []
+            invited: invited || [],
+            theme: theme
         });
 
         return result;
