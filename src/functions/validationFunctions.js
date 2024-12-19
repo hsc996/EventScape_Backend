@@ -24,6 +24,8 @@ function validateEventData({ eventName, description, eventDate, location, host, 
     }
 
     if (invited !== undefined && invited !== null) {
+        console.log("Invited:", invited, "Type:", typeof invited);
+        console.log("Is Array:", Array.isArray(invited));
         if (!Array.isArray(invited) || invited.some(id => !isValidObjectId(id))) {
             throw new AppError("Invited users must be a valid list of user IDs.", 400);
         }
