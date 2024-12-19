@@ -117,6 +117,7 @@ router.post(
     "/create",
     validateUserAuth,
     handleRoute(async (request, response) => {
+        console.log("Incoming request data:", request.body);
         const {
             eventName,
             description,
