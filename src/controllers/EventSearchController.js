@@ -25,8 +25,7 @@ router.get(
 // Search for public events
 
 router.get("/public",
-    validateUserAuth,
-    async (request, response) => {
+    handleRoute(async (request, response) => {
         const { query } = request.query;
 
         if (!query ){
@@ -43,7 +42,7 @@ router.get("/public",
         }
 
         sendSuccessResponse(response, "Event search completed successfully.", result);
-    }
+    })
 );
 
 
