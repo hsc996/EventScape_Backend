@@ -1,4 +1,5 @@
 const { isValidObjectId } = require("mongoose");
+const { AppError } = require("../functions/errorFunctions");
 
 
 function validateEventData({ eventName, description, eventDate, location, host, invited }) {
