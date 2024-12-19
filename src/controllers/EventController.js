@@ -118,7 +118,6 @@ router.post(
     validateUserAuth,
     handleRoute(async (request, response) => {
         const { userId: host } = request.authUserData
-        console.log("Incoming request data:", request.body);
         const {
             eventName,
             description,
