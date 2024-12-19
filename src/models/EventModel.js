@@ -33,7 +33,7 @@ const EventSchema = new mongoose.Schema({
     invited: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
     }],
     attendees: [{
         type: mongoose.Schema.Types.ObjectId,
