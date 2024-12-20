@@ -25,8 +25,8 @@ async function createRSVP(data){
             throw new AppError("The host cannot RSVP to their own event.", 403);
         }
 
-        if (!event.invited.includes(userId)){
-            throw new AppError("User is not invited to this event.", 403);
+        if (!event.isPublic && !event.invited.includes(userId)){
+            throw new AppError("This is a private event.", 403);
         }
 
         switch (status) {
@@ -37,8 +37,9 @@ async function createRSVP(data){
                 event.attendees.push(userId);
             case "maybe":
                 event.attendees.push(userId);
+                break;
             default:
-                throw new AppError("Invalid RSVP status.");
+                throw new AppError("Invalid RSVP status.", 400);
         }
 
         await event.save();
@@ -82,8 +83,8 @@ async function updateRSVP(query, updatedData){
             throw new AppError("The host cannot RSVP to their own event.", 403);
         }
 
-        if (!event.invited.includes(userId)){
-            throw new AppError("User is not invited to this event.", 403);
+        if (!event.isPublic && !event.invited.includes(userId)){
+            throw new AppError("This is a private event.", 403);
         }
 
         switch (status) {

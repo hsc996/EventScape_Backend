@@ -24,7 +24,8 @@ router.get(
 
 // Search for public events
 
-router.get("/public",
+router.get(
+    "/public",
     handleRoute(async (request, response) => {
         const { query } = request.query;
 
