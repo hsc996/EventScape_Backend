@@ -52,7 +52,7 @@ async function updateRSVP(query, updatedData){
             { $set: updatedData },
             { new: true, runValidators: true }
           ).catch(error => {
-            console.log("Mongoose update error:", error);  // Log error details
+            console.log("Mongoose update error:", error);
             throw new Error('Error updating RSVP status');
           });
 

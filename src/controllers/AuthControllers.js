@@ -87,7 +87,7 @@ router.post(
 
         const isPasswordValid = await comparePassword(password, user.password);
         if (!isPasswordValid) {
-            console.log("Invalid password attempt for email:", email);
+            console.log("Incorrect password attempt for email:", email);
             throw new AppError("Invalid password.", 401);
         }
 
