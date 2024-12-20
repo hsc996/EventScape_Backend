@@ -73,7 +73,6 @@ router.post(
     "/signin",
     handleRoute(async (request, response) => {
         const { error } = signinValidationSchema.validate(request.body);
-
         if (error){
             const errorMessage = error.details.map(detail => detail.message).join(", ").replace(/\"/g, '');
             throw new AppError(errorMessage, 400);
@@ -87,9 +86,8 @@ router.post(
         }
 
         const isPasswordValid = await comparePassword(password, user.password);
-
         if (!isPasswordValid) {
-            console.log("Invalid password attempt for email:", email); // Log invalid attempts
+            console.log("Invalid password attempt for email:", email);
             throw new AppError("Invalid password.", 401);
         }
 

@@ -26,17 +26,16 @@ router.post(
         const { userId } = request.authUserData;
         const { status } = request.body;
 
+        console.log("Received data:", { eventId, userId, status });
+
         if (!status){
             throw new AppError("Status is required.", 400);
-        }
-
-        if (!["yes", "maybe", "no"].includes(status)){
-            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
         }
 
         const existingRsvp = await checkRSVPExistence(eventId, userId);
 
         if (existingRsvp) {
+            console.log("Updating RSVP with:", { eventId, userId, status });
             const updatedRSVP = await updateRSVP({ eventId, userId }, { eventId, userId, status });
             sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
         } else {

@@ -29,9 +29,9 @@ async function sendSuccessResponse(response, message, data = null){
 
 async function checkEventPermission(request, response, next){
     try {
-        const user = request.authUserData;
         const { eventId }  = request.params;
-
+        
+        const user = request.authUserData;
         if (!user){
             return response.status(401).json({
                 error: "You are not authorised to perform this action."
@@ -39,8 +39,6 @@ async function checkEventPermission(request, response, next){
         }
 
         const event = await EventModel.findById(eventId);
-        console.log("Event Data: ", event);
-
         if (!event) {
             return response.status(404).json({
                 error: "Event not found"

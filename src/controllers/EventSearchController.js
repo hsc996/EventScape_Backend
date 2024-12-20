@@ -7,7 +7,7 @@ const { findAllPublicEvents, searchPublicEvents, searchPrivateEvents } = require
 
 const router = express.Router();
 
-// Retrieve all public events (for inital page load)
+// Retrieve all public events (for inital page load on discovery page)
 
 router.get(
     "/public/all",
