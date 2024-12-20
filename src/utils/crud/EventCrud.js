@@ -51,12 +51,15 @@ async function findActiveEventsForUser(userId){
     }
     try {
         const events = await EventModel.find({
-            invited: userId,
-            isActive: true
+            isActive: true,
+            $or: [
+                { invited: userId },
+                { isPublic: true }
+            ]
         });
 
-        if (!events || events.length === 0){
-            throw new AppError("No active events found for the given user.", 404);
+        if (!events || events.length === 0) {
+            throw new AppError("No active public or invited events found.", 404);
         }
 
         return events;
