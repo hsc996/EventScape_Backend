@@ -10,31 +10,30 @@ app.use(express.urlencoded({extended: true}));
 let corsOptions = {
     origin: function (origin, callback) {
         const validOrigins = [
-            /^http:\/\/localhost:\d+$/,
-            /^http:\/\/127\.0\.0\.1:\d+$/,
-            /^https:\/\/eventscape\d*\.netlify\.app$/,
+            "http://localhost:3000",
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5174",
+            "http://127.0.0.1:5173",
             "https://eventscape1.netlify.app"
         ];
 
-        // Check if the origin is in the allowed list or if it's a non-browser request
-        if (!origin || validOrigins.some((regex) => (typeof regex === 'string' ? regex === origin : regex.test(origin)))){
-            // Allow request
+        if (validOrigins.includes(origin) || !origin){
             callback(null, true);
         } else {
-            console.warn(`CORS blocked request from origin: ${origin}`)
             const err = new Error("Not allowed by CORS");
             err.status = 403;
             callback(err, false);
         }
     },
-    methods: "GET,PATCH,POST,DELETE,OPTIONS",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true, 
     optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 
-// Pre-flight handler - must be above routes
 app.options("*", cors(corsOptions));
 
 
