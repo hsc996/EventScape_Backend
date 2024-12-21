@@ -26,6 +26,8 @@ Please see screenshots below:
 ![image](https://github.com/user-attachments/assets/e8189706-806f-45e9-af9d-fd5acd054bf4)
 ![image](https://github.com/user-attachments/assets/1f0b6ba0-e33d-4930-b72a-ae5074a895a4)
 
+# Testing
+
 ## Express.js API Testing
 
 ### Manual Testing
