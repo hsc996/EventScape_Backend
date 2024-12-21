@@ -10,24 +10,26 @@ async function createRSVP(data){
     try {
         const { eventId, userId, status } = data;
 
-        const newRSVP = await RSVPModel.create(data);
-
         const event = await EventModel.findById(eventId);
 
-        if (!event){
+        if (!event) {
             throw new AppError("Event not found.", 404);
         }
 
         handleRSVPStatus(event, userId, status);
+        
+        const newRSVP = await RSVPModel.create(data);
 
         switch (status) {
             case "yes":
                 event.attendees.push(userId);
                 break;
             case "no":
-                event.attendees.push(userId);
+                event.not_attending.push(userId);
+                break;
             case "maybe":
-                event.attendees.push(userId);
+                event.maybe_attending.push(userId);
+                break;
             default:
                 throw new AppError("Invalid RSVP status.");
         }
@@ -87,17 +89,23 @@ async function updateRSVP(query, updatedData){
 
         switch (status) {
             case "yes":
-                event.attendees.push(userId);
+                if (!event.attendees.includes(userId)) {
+                    event.attendees.push(userId);
+                }
                 event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
                 event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
                 break;
             case "no":
-                event.not_attending.push(userId);
+                if (!event.not_attending.includes(userId)) {
+                    event.not_attending.push(userId);
+                }
                 event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
                 event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
                 break;
             case "maybe":
-                event.maybe_attending.push(userId);
+                if (!event.maybe_attending.includes(userId)) {
+                    event.maybe_attending.push(userId);
+                }
                 event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
                 event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
                 break;
