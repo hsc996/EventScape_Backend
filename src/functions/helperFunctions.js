@@ -63,31 +63,7 @@ async function handleRSVPStatus(event, userId, status){
         throw new AppError("You have already RSVP'd as 'no' to this event.", 400);
     }
 
-    switch (status) {
-        case "yes":
-            if (!event.attendees.includes(userId)) {
-                event.attendees.push(userId);
-            }
-            event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
-                event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
-            break;
-        case "no":
-            if (!event.not_attending.includes(userId)) {
-                event.not_attending.push(userId);
-            }
-            event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
-            event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
-            break;
-        case "maybe":
-            if (!event.maybe_attending.includes(userId)) {
-                event.maybe_attending.push(userId);
-            }
-            event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
-            event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
-            break;
-            default:
-                throw new AppError("Invalid RSVP status.", 400);
-        }
+
 }
 
 module.exports = {

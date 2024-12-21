@@ -10,10 +10,6 @@ async function createRSVP(data){
     try {
         const { eventId, userId, status } = data;
 
-        if (!["yes", "maybe", "no"].includes(status)){
-            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
-        }
-
         const newRSVP = await RSVPModel.create(data);
 
         const event = await EventModel.findById(eventId);
@@ -22,9 +18,7 @@ async function createRSVP(data){
             throw new AppError("Event not found.", 404);
         }
 
-        if (!event.invited.includes(userId)){
-            throw new AppError("User is not invited to this event.", 403);
-        }
+        handleRSVPStatus(event, userId, status);
 
         switch (status) {
             case "yes":
@@ -59,10 +53,6 @@ async function updateRSVP(query, updatedData){
     try {
         const { eventId, userId, status } = updatedData;
 
-        if (!["yes", "maybe", "no"].includes(status)){
-            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
-        }
-
         const rsvp = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
 
         if (!rsvp){
@@ -73,6 +63,14 @@ async function updateRSVP(query, updatedData){
 
         if (!event){
             throw new AppError("Event not found.", 404);
+        }
+
+        if (event.host.toString() === userId.toString()){
+            throw new AppError("The host cannot RSVP to their own event.", 403);
+        }
+    
+        if (!event.isPublic && !event.invited.includes(userId)){
+            throw new AppError("This is a private event.", 403);
         }
 
         if (status === "yes" && event.attendees.includes(userId)) {
