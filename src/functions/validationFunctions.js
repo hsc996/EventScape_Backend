@@ -15,6 +15,10 @@ function validateEventData({ eventName, description, eventDate, location, host, 
         throw new AppError("Event name or description exceeds the character limit.", 400);
     }
 
+    if (description.length < 10) {
+        throw new AppError("Description must be at least 10 characters long.", 400);
+    }
+
     if (new Date(eventDate) <= new Date()) {
         throw new AppError("Event date must be in the future.", 400);
     }
