@@ -10,11 +10,33 @@ async function createRSVP(data){
     try {
         const { eventId, userId, status } = data;
 
-        const event = await EventModel.findById(eventId);
-
-        await handleRSVPStatus(event, userId, status);
+        if (!["yes", "maybe", "no"].includes(status)){
+            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
+        }
 
         const newRSVP = await RSVPModel.create(data);
+
+        const event = await EventModel.findById(eventId);
+
+        if (!event){
+            throw new AppError("Event not found.", 404);
+        }
+
+        if (!event.invited.includes(userId)){
+            throw new AppError("User is not invited to this event.", 403);
+        }
+
+        switch (status) {
+            case "yes":
+                event.attendees.push(userId);
+                break;
+            case "no":
+                event.attendees.push(userId);
+            case "maybe":
+                event.attendees.push(userId);
+            default:
+                throw new AppError("Invalid RSVP status.");
+        }
 
         await event.save();
 
@@ -33,31 +55,57 @@ async function createRSVP(data){
 
 // Updating an RSVP response on an event
 
-async function updateRSVP(updatedData){
+async function updateRSVP(query, updatedData){
     try {
         const { eventId, userId, status } = updatedData;
-        console.log("Received status in updateRSVP:", updatedData.status);
-        console.log("Status received in request:", status);
 
-        if (!status) {
-            throw new AppError(`Status is required`, 400);
+        if (!["yes", "maybe", "no"].includes(status)){
+            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
         }
 
-        const rsvp = await RSVPModel.findOneAndUpdate(
-            { eventId: eventId, userId: userId },
-            { $set: updatedData },
-            { new: true, runValidators: true }
-          ).catch(error => {
-            console.log("Mongoose update error:", error);
-            throw new Error('Error updating RSVP status');
-          });
+        const rsvp = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
+
+        if (!rsvp){
+            throw new AppError("RSVP not found.", 404)
+        }
 
         const event = await EventModel.findById(eventId);
+
         if (!event){
             throw new AppError("Event not found.", 404);
         }
 
-        await handleRSVPStatus(event, userId, status);
+        if (status === "yes" && event.attendees.includes(userId)) {
+            throw new AppError("You have already RSVP'd as 'yes' for this event.", 400);
+        }
+
+        if (status === "no" && event.not_attending.includes(userId)) {
+            throw new AppError("You have already RSVP'd as 'no' for this event.", 400);
+        }
+
+        if (status === "maybe" && event.maybe_attending.includes(userId)) {
+            throw new AppError("You have already RSVP'd as 'maybe' for this event.", 400);
+        }
+
+        switch (status) {
+            case "yes":
+                event.attendees.push(userId);
+                event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
+                event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            case "no":
+                event.not_attending.push(userId);
+                event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
+                event.maybe_attending = event.maybe_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            case "maybe":
+                event.maybe_attending.push(userId);
+                event.attendees = event.attendees.filter(user => user.toString() !== userId.toString());
+                event.not_attending = event.not_attending.filter(user => user.toString() !== userId.toString());
+                break;
+            default:
+                throw new AppError("Invalid RSVP status.", 400);
+        }
 
         await event.save();
 
