@@ -35,8 +35,7 @@ router.post(
         const existingRsvp = await checkRSVPExistence(eventId, userId);
 
         if (existingRsvp) {
-            console.log("Updating RSVP with:", { eventId, userId, status });
-            const updatedRSVP = await updateRSVP({ eventId, userId }, { eventId, userId, status });
+            const updatedRSVP = await updateRSVP({ eventId, userId, status });
             sendSuccessResponse(response, `RSVP for event ${eventId} updated successfully.`, updatedRSVP);
         } else {
             const newRSVP = await createRSVP({ eventId, userId, status });

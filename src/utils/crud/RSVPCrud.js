@@ -40,7 +40,7 @@ async function updateRSVP(updatedData){
         console.log("Status received in request:", status);
 
         if (!status) {
-            throw new AppError(`${status} is required`, 400);
+            throw new AppError(`Status is required`, 400);
         }
 
         const rsvp = await RSVPModel.findOneAndUpdate(
