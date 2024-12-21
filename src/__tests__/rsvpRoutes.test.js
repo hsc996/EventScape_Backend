@@ -50,21 +50,4 @@ describe("POST rsvp/attending/:eventId", () => {
         expect(response.body.message).toBe("Event not found.");
     });
 
-    // test("should successfully create RSVP for an event", async () => {
-    //     const mockRSVP = {
-    //         eventId,
-    //         userId: "507f1f77bcf86cd799439011",
-    //         status: "yes" };
-    //     RSVPModel.create.mockResolvedValue(mockRSVP);
-
-    //     const response = await request(app)
-    //         .post(`/rsvp/attending/${eventId}`)
-    //         .set("Authorization", `Bearer ${token}`)
-    //         .send({ status: "yes" });
-
-    //     expect(response.status).toBe(200);
-    //     expect(response.body.message).toBe(`RSVP for event ${eventId} by user 507f1f77bcf86cd799439011 was recorded successfully.`);
-    //     expect(RSVPModel.create).toHaveBeenCalledWith(mockRSVP);
-    // });
-
 })

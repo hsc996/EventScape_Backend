@@ -62,9 +62,9 @@ async function handleRSVPStatus(event, userId, status){
     if (event.not_attending.includes(userId) && status === "no") {
         throw new AppError("You have already RSVP'd as 'no' to this event.", 400);
     }
-
-
 }
+
+
 
 module.exports = {
     validateEmail,
