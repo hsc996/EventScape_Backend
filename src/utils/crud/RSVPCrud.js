@@ -10,10 +10,6 @@ async function createRSVP(data){
     try {
         const { eventId, userId, status } = data;
 
-        if (!["yes", "maybe", "no"].includes(status)){
-            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
-        }
-
         const event = await EventModel.findById(eventId);
 
         await handleRSVPStatus(event, userId, status);
@@ -37,7 +33,7 @@ async function createRSVP(data){
 
 // Updating an RSVP response on an event
 
-async function updateRSVP(query, updatedData){
+async function updateRSVP(updatedData){
     try {
         const { eventId, userId, status } = updatedData;
         console.log("Received status in updateRSVP:", updatedData.status);
