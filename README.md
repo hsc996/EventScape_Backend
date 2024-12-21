@@ -30,6 +30,9 @@ Please see screenshots below:
 
 ### Manual Testing
 
+We tested the API in Bruno using the local development link to ensure functionality during development. This was further validated by testing the deployed API link in Bruno, confirming consistent behaviour in the production environment. We then completed a manual testing spreadsheet in order to accurately track the tests performed. Despite testing all of the endpoints successfully, we were unable to complete a manual testing sheet for each endpoint due to time constraints.
+
+
 ![UserReg_MTS](/src/docs/UserReg_Testing.png)
 
 ![bruno_userReg](/src/docs/bruno_registration.png)
