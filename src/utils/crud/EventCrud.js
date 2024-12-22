@@ -52,10 +52,8 @@ async function findActiveEventsForUser(userId){
     try {
         const events = await EventModel.find({
             isActive: true,
-            $or: [
-                { invited: userId },
-                { isPublic: true }
-            ]
+            invited: { $in: [userId] },
+            isPublic: true
         });
 
         if (!events || events.length === 0) {
