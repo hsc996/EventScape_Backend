@@ -71,11 +71,16 @@ async function getFollowing(query){
 async function followUser(query){
     try {
         const newFollow = new FollowerModel(query);
+        
         const savedFollow = await newFollow.save();
 
         return savedFollow;
     } catch (error) {
         console.error("Error following user: ", error.message);
+
+        if (error.code === 11000) {
+            throw new AppError("You are already following this user.", 400);
+        }
 
         if (error instanceof AppError) {
             throw error;

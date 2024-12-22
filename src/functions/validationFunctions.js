@@ -38,5 +38,5 @@ function validateEventData({ eventName, description, eventDate, location, host, 
 
 
 module.exports = {
-    validateEventData
+    validateEventData,
 }

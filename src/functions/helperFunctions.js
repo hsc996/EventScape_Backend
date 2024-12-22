@@ -6,17 +6,6 @@ const saltRounds = 10;
 
 //Helper Functions
 
-function validateEmail(email){
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-
-function validatePassword(password){
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-    return passwordRegex.test(password);
-}
-
 
 async function hashPassword(password){
     return await bcrypt.hash(password, saltRounds);
@@ -64,11 +53,20 @@ async function handleRSVPStatus(event, userId, status){
     }
 }
 
+async function validateFollow(followingId, followerId){
+    if (!followerId || !followingId) {
+        throw new AppError("Invalid follower or following ID.", 400);
+    }
+
+    if (followingId === followerId){
+        throw new AppError("You cannot follow or unfollow yourself.", 400);
+    }
+}
+
 module.exports = {
-    validateEmail,
-    validatePassword,
     hashPassword,
     comparePassword,
     checkRSVPExistence,
-    handleRSVPStatus
+    handleRSVPStatus,
+    validateFollow
 }

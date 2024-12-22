@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const { validateUserAuth } = require("../middleware/validateUserAuth.js");
 const {
@@ -11,6 +12,7 @@ const {
 } = require("../utils/crud/FollowerCrud");
 const { handleRoute, sendSuccessResponse } = require("../middleware/routerMiddleware.js");
 const { AppError } = require("../functions/errorFunctions.js");
+const { validateFollow } = require("../functions/helperFunctions.js");
 
 const router = express.Router();
 
@@ -62,14 +64,8 @@ router.post(
     handleRoute(async (request, response) => {
         const { userId: followingId } = request.params;
         const { userId: followerId } = request.authUserData;
-    
-        if (!followingId){
-            throw new AppError(`User with ID ${followingId} not found.`, 404);
-        }
 
-        if (followingId === followerId){
-            throw new AppError("You cannot follow yourself.", 400);
-        }
+        await validateFollow(followingId, followerId);
 
         const alreadyFollowing = await isAlreadyFollowing({ followerId, followingId });
         if (alreadyFollowing){
@@ -95,13 +91,7 @@ router.delete(
         const { userId: followingId } = request.params;
         const { userId: followerId } = request.authUserData;
     
-        if (!followingId){
-            throw new AppError(`User with ID ${followingId} not found.`, 404);
-        }
-
-        if (followingId === followerId){
-            throw new AppError("You cannot unfollow yourself.", 400);
-        }
+        await validateFollow(followingId, followerId);
 
         const existingFollow = await findOneFollower({ followerId, followingId });
         if (!existingFollow){

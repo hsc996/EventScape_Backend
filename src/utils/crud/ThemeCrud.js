@@ -8,8 +8,8 @@ const { AppError } = require("../../functions/errorFunctions.js");
 async function findAllTemplates(){
     try {
         const template = await ThemeTemplateModel.find();
+        
         return template;
-
     } catch (error) {
         console.error("Error finding all theme templates: ", error);
 
