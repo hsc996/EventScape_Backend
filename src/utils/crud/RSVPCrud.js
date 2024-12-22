@@ -16,7 +16,7 @@ async function createRSVP(data){
             throw new AppError("Event not found.", 404);
         }
 
-        handleRSVPStatus(event, userId, status);
+        await handleRSVPStatus(event, userId, status);
         
         const newRSVP = await RSVPModel.create(data);
 
@@ -55,37 +55,13 @@ async function updateRSVP(query, updatedData){
     try {
         const { eventId, userId, status } = updatedData;
 
-        const rsvp = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
-
-        if (!rsvp){
-            throw new AppError("RSVP not found.", 404)
-        }
-
         const event = await EventModel.findById(eventId);
 
         if (!event){
             throw new AppError("Event not found.", 404);
         }
 
-        if (event.host.toString() === userId.toString()){
-            throw new AppError("The host cannot RSVP to their own event.", 403);
-        }
-    
-        if (!event.isPublic && !event.invited.includes(userId)){
-            throw new AppError("This is a private event.", 403);
-        }
-
-        if (status === "yes" && event.attendees.includes(userId)) {
-            throw new AppError("You have already RSVP'd as 'yes' for this event.", 400);
-        }
-
-        if (status === "no" && event.not_attending.includes(userId)) {
-            throw new AppError("You have already RSVP'd as 'no' for this event.", 400);
-        }
-
-        if (status === "maybe" && event.maybe_attending.includes(userId)) {
-            throw new AppError("You have already RSVP'd as 'maybe' for this event.", 400);
-        }
+        await handleRSVPStatus(event, userId, status);
 
         switch (status) {
             case "yes":
@@ -111,6 +87,12 @@ async function updateRSVP(query, updatedData){
                 break;
             default:
                 throw new AppError("Invalid RSVP status.", 400);
+        }
+
+        const rsvp = await RSVPModel.findOneAndUpdate(query, updatedData, { new: true });
+
+        if (!rsvp){
+            throw new AppError("RSVP not found.", 404)
         }
 
         await event.save();

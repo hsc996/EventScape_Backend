@@ -30,10 +30,6 @@ router.post(
             throw new AppError("Status is required.", 400);
         }
 
-        if (!["yes", "maybe", "no"].includes(status)){
-            throw new AppError("Invalid response type. Status must be 'yes', 'maybe' or 'no'.", 400);
-        }
-
         const existingRsvp = await checkRSVPExistence(eventId, userId);
 
         if (existingRsvp) {

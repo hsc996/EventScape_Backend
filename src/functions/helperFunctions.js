@@ -64,8 +64,6 @@ async function handleRSVPStatus(event, userId, status){
     }
 }
 
-
-
 module.exports = {
     validateEmail,
     validatePassword,
