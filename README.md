@@ -1,10 +1,31 @@
 # Link to Part A ReadMe 
-[Link text](https://github.com/hsc996/EventScape-T3A2-A/tree/main)
+[Part A Readme](https://github.com/hsc996/EventScape-T3A2-A/tree/main)
 
-# Changes and Updates to Part A 
-In creating EventScape, we made some significant changes to the initial plan in Part A.
+# EventScape
 
-For the **wireframes** The main change made was to the Create Event page, which I paired back due to the timeframe. I simplified the themes to have just a colour scheme and background picture rather then the choice of mulitple images I intended to have. (insert screenshot of browser page here).
+Link to the deployed website [here:](https://eventscape1.netlify.app/)
+
+# Acknowledgement of Discrepancies: Part A vs. Part B
+
+In order to remain accountable, we would like to acknowledge some discrepancies between the planning designs and the final product. Firstly, the user profiles/follow functionality outlined in the inital plans have not been implemented due to time constraints.
+
+This, in turn, ultimately affected our ability to implement the "invitees" list in an aesthetic manner. While  we attempt to pivot strategy and allocate placeholder icons instead, this was also not achieved due to time constraints. However, we decided to retain the list of user IDs on the event pages in order to demonstrate the underlying logic intended for the feature.
+
+Similarly, the original design included theme controllers in the API. Upon further evaluation, we realised that the theme management could be handled seamlessly via the frontend. In this way, we only needed to update the Event schema to log the title of the theme selected by the user. As a result, the theme controllers became redundant, but we decided to retain them in the API to promote flexibility for potential future use cases.
+
+Additionally, several API routes remain un-used in the current product. While a lot of these endpoints reflect stretch goals in the first place, these endpoints remain in the API in case we are able to refine the application and include these features in the future. For example, the feature to find all active events a user is hosting; intended for a dedicated tab where users could track their hosted events. This wasn't included in the original plan, but was included so as not to limit the capabilities of the API.
+
+For the **wireframes** The main change made was to the Create Event page, which I paired back due to the timeframe. I simplified the themes to have just a colour scheme and background picture rather then the choice of mulitple images I intended to have. 
+
+Please see screenshots of the deployed apps webpages below:
+
+![signup](src/docs/signup.png)
+![login](src/docs/login.png)
+![create-event](/src/docs/create-event.png)
+![search-events](src/docs/search-events.png)
+![attending](/src/docs/attending.png)
+![calendar](src/docs/calendar.png)
+
 
 # Libraries Used
 
@@ -83,18 +104,6 @@ Deployed app render/route testing:
 Production render/route testing:
 
 ![localhost](/src/docs/production.png)
-
-
-# Acknowledgement of Discrepancies: Part A vs. Part B
-
-
-In order to remain accountable, we would like to acknowledge some discrepancies between the planning designs and the final product. Firstly, the user profiles/follow functionality outlined in the inital plans have not been implemented due to time constraints.
-
-This, in turn, ultimately affected our ability to implement the "invitees" list in an aesthetic manner. While  we attempt to pivot strategy and allocate placeholder icons instead, this was also not achieved due to time constraints. However, we decided to retain the list of user IDs on the event pages in order to demonstrate the underlying logic intended for the feature.
-
-Similarly, the original design included theme controllers in the API. Upon further evaluation, we realised that the theme management could be handled seamlessly via the frontend. In this way, we only needed to update the Event schema to log the title of the theme selected by the user. As a result, the theme controllers became redundant, but we decided to retain them in the API to promote flexibility for potential future use cases.
-
-Additionally, several API routes remain un-used in the current product. While a lot of these endpoints reflect stretch goals in the first place, these endpoints remain in the API in case we are able to refine the application and include these features in the future. For example, the feature to find all active events a user is hosting; intended for a dedicated tab where users could track their hosted events. This wasn't included in the original plan, but was included so as not to limit the capabilities of the API.
 
 
 
